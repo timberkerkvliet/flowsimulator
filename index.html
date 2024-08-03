@@ -14,9 +14,8 @@
             word-break: break-all;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             color: white;
-            align-items: center;
-            justify-content: center;
-            display: flex;
+            display: block;
+            margin-bottom: 10px;
         }
         .team {
             border-color: black;
@@ -24,11 +23,14 @@
             width: 500px;
             margin: 5%;
             padding: 3%;
+            margin-top: 3px;
+            margin-bottom: 3px;
         }
     </style>
 </head>
 <body>
-    <div class="team"> </div>
+    <div class="team" id="team"> </div>
+    <div class="stats" id="stats"></div>
     <button id="startButton">Start Simulation</button>
 
     <script type="module" src="/src/start-simulation.ts">

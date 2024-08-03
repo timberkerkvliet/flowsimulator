@@ -1,12 +1,13 @@
 import { Renderer } from "./renderer";
 import { Simulation } from "./simulation"
+import { MobStrategy } from "./strategy";
 import { Team } from "./team";
 
 const button = document.getElementById('startButton');
 if (button) {
 button.addEventListener('click', async () => {
-    console.log("Click!")
-    const simulation = new Simulation(new Team(), new Renderer());
+    const simulation = new Simulation(new Team(), new MobStrategy(), new Renderer());
+    button.remove();
     await simulation.run();
 });
 }

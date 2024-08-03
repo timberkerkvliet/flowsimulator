@@ -2,7 +2,7 @@ class Team {
     private members: any[];
 
     constructor() {
-        this.members = [];
+        this.members = ['T'];
     }
 
     getSize(): number {

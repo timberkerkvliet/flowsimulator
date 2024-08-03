@@ -11,26 +11,29 @@ class IdCounter {
 }
 
 class UnitOfWork {
-    private id: number;
+    private id: string;
     private progress: number;
     private assignees: Team;
 
     constructor() {
-        this.id = IdCounter.newId();
+        this.id = `uow-${IdCounter.newId()}`;
         this.progress = 0;
         this.assignees = new Team();
     }
 
-    getId() {
+    getId(): string {
         return this.id;
     }
 
     isFinished(): boolean {
-        return this.progress == 1;
+        return this.progress >= 1;
     }
 
     tick(): void {
-        if (this.assignees.getSize() == 0) {
+        if (this.isFinished()) {
+            return;
+        }
+        if (this.assignees.getSize() === 0) {
             return;
         }
         this.progress += 0.1;
@@ -38,6 +41,10 @@ class UnitOfWork {
 
     assign(team: Team): void {
         this.assignees = team;
+    }
+
+    unassign(): void {
+        this.assignees = new Team();
     }
 
     getProgress(): number {
