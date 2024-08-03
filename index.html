@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/gsap.min.js"></script>
+    <title>Team Simulation</title>
+    <style>
+        .uow {
+            width: 60px;
+            height: 60px;
+            background-color: darkcyan;
+            position: relative;
+            word-break: break-all;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            color: white;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+        .team {
+            border-color: black;
+            border-style: dotted;
+            width: 500px;
+            margin: 5%;
+            padding: 3%;
+        }
+    </style>
+</head>
+<body>
+    <div class="team"> </div>
+    <button id="startButton">Start Simulation</button>
+
+    <script type="module" src="/src/simulation.ts">
+    </script>
+</body>
+</html>
