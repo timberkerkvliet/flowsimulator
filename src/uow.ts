@@ -10,7 +10,13 @@ class IdCounter {
 
 }
 
-class UnitOfWork {
+interface ReadUnitOfWork {
+    getId(): string;
+    isFinished(): boolean;
+    getProgress(): number;
+}
+
+class UnitOfWork implements ReadUnitOfWork {
     private id: string;
     private progress: number;
     private assignees: Team;
@@ -57,4 +63,4 @@ class UnitOfWork {
 
 }
 
-export { UnitOfWork }
+export { UnitOfWork, ReadUnitOfWork }

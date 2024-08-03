@@ -1,5 +1,6 @@
-import { SimulationState } from "./simulation";
+import { Simulation } from "./simulation";
 import gsap from "gsap";
+
 
 class Renderer {
     private teamDiv;
@@ -10,8 +11,8 @@ class Renderer {
         this.statsDiv = document.getElementById('stats');
     }
 
-    private createBoxes(state: SimulationState, existingIds) {
-        state.workInProgress.forEach((uow) => {
+    private createBoxes(simulation: Simulation, existingIds) {
+        simulation.getWorkInProgress().forEach((uow) => {
             if (existingIds.includes(uow.getId())) {
                 return;
             }
@@ -20,9 +21,9 @@ class Renderer {
         })
     }
 
-    private removeBoxes(state: SimulationState, existingIds: string[]) {
+    private removeBoxes(simulation: Simulation, existingIds: string[]) {
         existingIds.forEach((uowId) => {
-            if (state.workInProgress.filter((uow) => uow.getId() === uowId).length > 0) {
+            if (simulation.getWorkInProgress().filter((uow) => uow.getId() === uowId).length > 0) {
                 return;
             }
             document.getElementById(uowId).remove();
@@ -30,7 +31,7 @@ class Renderer {
         })
     }
 
-    render(state: SimulationState) {
+    render(simulation: Simulation) {
         const uowDivs = this.teamDiv.getElementsByTagName('div');
 
         let existingIds: string[] = [];
@@ -40,14 +41,14 @@ class Renderer {
             existingIds.push(childDiv.id);
         }
 
-        this.createBoxes(state, existingIds);
-        this.removeBoxes(state, existingIds);
+        this.createBoxes(simulation, existingIds);
+        this.removeBoxes(simulation, existingIds);
 
-        state.workInProgress.forEach((uow) => {
+        simulation.getWorkInProgress().forEach((uow) => {
             gsap.to("#" + uow.getId(), { x: 0 + uow.getProgress() * 400, duration: 0.3, yoyo: false, repeat: 0 });
         })
 
-        this.statsDiv.innerHTML = "Finished: " + state.finishedWork.length;
+        this.statsDiv.innerHTML = "Finished: " + simulation.getFinishedWork().length;
 
     }
 }

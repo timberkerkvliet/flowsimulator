@@ -1,10 +1,6 @@
 import { Team } from "./team";
 import { UnitOfWork } from "./uow";
 
-type Assignment = {
-    team: Team
-    unitOfWork: UnitOfWork
-}
 
 interface Strategy {
     execute(team: Team, workInProgress: UnitOfWork[]): UnitOfWork[];

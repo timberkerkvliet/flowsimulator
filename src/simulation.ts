@@ -1,50 +1,49 @@
 import { Team } from "./team";
-import { UnitOfWork } from "./uow"
+import { UnitOfWork, ReadUnitOfWork } from "./uow"
 import { Renderer } from "./renderer"
 import { Strategy } from "./strategy"
 
-class SimulationState {
-    constructor(
-    public time: number,
-    public workInProgress: UnitOfWork[],
-    public finishedWork: UnitOfWork[]
-    ) {}
+interface ReadSimulation {
+    getWorkInProgress(): ReadUnitOfWork[]
+    getFinishedWork(): ReadUnitOfWork[]
 }
 
+class Simulation implements ReadSimulation {
+    private time: number;
+    private units: UnitOfWork[];
 
-class Simulation {
-    private state: SimulationState;
+
     constructor(private team: Team, private strategy: Strategy, private renderer: Renderer) {
-        this.state = new SimulationState(
-            0,
-            [],
-            []
-        )
+        this.time = 0;
+        this.units = [];
+    }
+
+    getWorkInProgress(): UnitOfWork[] {
+        return this.units.filter((uow) => !uow.isFinished())
+    }
+
+    getFinishedWork(): UnitOfWork[] {
+        return this.units.filter((uow) => uow.isFinished())
     }
 
     private tick(): void {
-        this.state.time += 1;
-        this.strategy.execute(this.team, this.state.workInProgress);
+        this.time += 1;
+        this.units = this.getFinishedWork().concat(this.strategy.execute(this.team, this.getWorkInProgress()));
         
-        this.state.workInProgress.forEach((uow) => {
+        this.units.forEach((uow) => {
             uow.tick();
-            if (uow.isFinished()) {
-                this.state.finishedWork.push(uow);
-            }
         });
-        this.state.workInProgress = this.state.workInProgress.filter((uow) => !uow.isFinished())
+        this.renderer.render(this);
     }
 
     async run() {
-        console.log("Start simulation!")
-        this.renderer.render(this.state);
+        this.renderer.render(this);
         while (true) {
             this.tick();
-            this.renderer.render(this.state);
             await new Promise(resolve => setTimeout(resolve, 300));
         }
     }
 
 }
 
-export { Simulation, SimulationState}
+export { Simulation, ReadSimulation }
