@@ -1,11 +1,11 @@
-import { Team, Perspective } from "./team";
+import { Team, Perspective, Member } from "./team";
 
 class IdCounter {
     private static counter = 0;
 
     public static newId(): number {
-        return IdCounter.counter;
         IdCounter.counter += 1;
+        return IdCounter.counter;
     }
 
 }
@@ -24,7 +24,7 @@ class UnitOfWork implements ReadUnitOfWork {
     private assignees: Team;
     private time: number;
 
-    constructor(readonly perspectivesNeeded: Perspective[]) {
+    constructor(readonly stages: Perspective[]) {
         this.id = `uow-${IdCounter.newId()}`;
         this.progress = 0;
         this.time = 0;
@@ -36,26 +36,38 @@ class UnitOfWork implements ReadUnitOfWork {
     }
 
     isFinished(): boolean {
-        return this.progress === this.perspectivesNeeded.length;
+        return this.progress === this.stages.length;
     }
 
     getCycleTime(): number {
         return this.time;
     }
 
+    needsPerspective(): Perspective {
+        return this.stages[this.progress];
+    }
+
     tick(): void {
         if (this.isFinished()) {
+            this.unassign();
             return;
         }
         this.time += 1;
-        if (this.assignees.getSize() === 0) {
-            return;
+        if (this.assignees.hasPerspective(this.needsPerspective())) {
+            this.progress += 1;
         }
-        this.progress += 1;
     }
 
     assign(team: Team): void {
         this.assignees = team;
+    }
+
+    addMember(member: Member): void {
+        this.assignees = new Team(this.assignees.getMembers().concat(member))
+    }
+
+    removeMember(member: Member): void {
+        this.assignees = new Team(this.assignees.getMembers().filter((x) => x.label !== member.label))
     }
 
     unassign(): void {
@@ -63,7 +75,7 @@ class UnitOfWork implements ReadUnitOfWork {
     }
 
     getProgress(): number {
-        return this.progress / this.perspectivesNeeded.length;
+        return this.progress / this.stages.length;
     }
 
     getAssignees(): Team {

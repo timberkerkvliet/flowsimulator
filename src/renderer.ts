@@ -1,5 +1,21 @@
-import { ReadSimulation } from "./simulation";
+
 import gsap from "gsap";
+import { Perspective } from "./team";
+
+type UnitState = {
+    id: string;
+    progress: number;
+    assignees: string[];
+    perspective: Perspective;
+}
+
+type SimulationState = {
+    time: number;
+    flow: number;
+    cycleTime: number;
+    wip: number;
+    workInProgress: UnitState[]
+}
 
 
 class Renderer {
@@ -11,19 +27,19 @@ class Renderer {
         this.statsDiv = document.getElementById('stats');
     }
 
-    private createBoxes(simulation: ReadSimulation, existingIds) {
-        simulation.getWorkInProgress().forEach((uow) => {
-            if (existingIds.includes(uow.getId())) {
+    private createBoxes(simulation: SimulationState, existingIds) {
+        simulation.workInProgress.forEach((uow) => {
+            if (existingIds.includes(uow.id)) {
                 return;
             }
-            this.teamDiv.innerHTML += "<div id='" + uow.getId() + "' class='uow'></div>" ;
+            this.teamDiv.innerHTML += "<div id='" + uow.id + "' class='uow'></div>" ;
 
         })
     }
 
-    private removeBoxes(simulation: ReadSimulation, existingIds: string[]) {
+    private removeBoxes(simulation: SimulationState, existingIds: string[]) {
         existingIds.forEach((uowId) => {
-            if (simulation.getWorkInProgress().filter((uow) => uow.getId() === uowId).length > 0) {
+            if (simulation.workInProgress.filter((uow) => uow.id === uowId).length > 0) {
                 return;
             }
             document.getElementById(uowId).remove();
@@ -31,31 +47,37 @@ class Renderer {
         })
     }
 
-    private moveBoxes(simulation: ReadSimulation) {
-        simulation.getWorkInProgress().forEach((uow) => {
-            gsap.to("#" + uow.getId(), { x: 0 + uow.getProgress() * 400, duration: 0.3, yoyo: false, repeat: 0 });
+    private moveBoxes(simulation: SimulationState) {
+        simulation.workInProgress.forEach((uow) => {
+            gsap.to("#" + uow.id, { x: 0 + uow.progress * 400, duration: 0.3, yoyo: false, repeat: 0 });
         })
     }
 
-    private updateAssignees(simulation: ReadSimulation) {
-        simulation.getWorkInProgress().forEach((uow) => {
-            const labels = uow.getAssignees().getMembers().map((member) => member.label)
-            document.getElementById(uow.getId()).innerHTML = labels.join(" ")
-            
+    private updateAssignees(simulation: SimulationState) {
+        simulation.workInProgress.forEach((uow) => {
+            document.getElementById(uow.id).innerHTML = uow.assignees.join(" ") 
         })
     }
 
-    private updateStats(simulation: ReadSimulation) {
-        const flow = simulation.getFinishedWork().length / simulation.getTime();
-        const cycleTime = simulation.getFinishedWork().map((x) => x.getCycleTime()).reduce((x, y) => x + y, 0) / simulation.getFinishedWork().length;
-        const wip = flow * cycleTime;
-
-        this.statsDiv.innerHTML = "Flow: " + Math.round(flow * 100) / 100
-        this.statsDiv.innerHTML += "<br>Cycle time: " + Math.round(cycleTime * 100) / 100
-        this.statsDiv.innerHTML += "<br>WIP: " + Math.round(wip * 100) / 100;
+    private updateColor(simulation: SimulationState) {
+        simulation.workInProgress.forEach((uow) => {
+            if (uow.perspective === 1) {
+                document.getElementById(uow.id).style.backgroundColor = 'darkcyan'
+            }
+            if (uow.perspective === 2) {
+                document.getElementById(uow.id).style.backgroundColor = 'darkolivegreen'
+            }
+        })
     }
 
-    render(simulation: ReadSimulation) {
+    private updateStats(state: SimulationState) {
+
+        this.statsDiv.innerHTML = "Throughput: " + Math.round(state.flow * 100) / 100
+        this.statsDiv.innerHTML += "<br>Cycle time: " + Math.round(state.cycleTime * 100) / 100
+        this.statsDiv.innerHTML += "<br>WIP: " + Math.round(state.wip * 100) / 100;
+    }
+
+    render(simulation: SimulationState) {
         const uowDivs = this.teamDiv.getElementsByTagName('div');
 
         let existingIds: string[] = [];
@@ -68,6 +90,7 @@ class Renderer {
         this.createBoxes(simulation, existingIds);
         this.removeBoxes(simulation, existingIds);
         this.updateAssignees(simulation);
+        this.updateColor(simulation);
         this.moveBoxes(simulation);
         
         this.updateStats(simulation);
@@ -75,4 +98,4 @@ class Renderer {
          }
 }
 
-export { Renderer }
+export { Renderer, SimulationState }

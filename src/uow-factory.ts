@@ -1,18 +1,29 @@
+import { Perspective } from "./team";
 import { UnitOfWork } from "./uow";
 
-function exponentialRandom(mu: number): number {
-    return Math.round(-Math.log(1 - Math.random()) * mu);
+function getGeometric(p: number): number {
+    let result = 1;
+    while (Math.random() >= p) {
+        result += 1
+    }
+    return result;
 }
 
 class UnitOfWorkFactory {
     constructor(private mu: number) {}
 
-    create(): UnitOfWork {
-        let c = [];
-        for (let i = 0; i < exponentialRandom(this.mu); i ++) {
-            c.push(1)
+    create(startPerspective: Perspective): UnitOfWork {
+        let stages = [];
+        const size = getGeometric(1/this.mu);
+        for (let i = 0; i < size; i ++) {
+            if (Math.random() > 0.5) {
+                stages.push(1)
+            } else {
+                stages.push(2)
+            }
         }
-        return new UnitOfWork(c);
+        stages[0] = startPerspective;
+        return new UnitOfWork(stages);
     }
 }
 
