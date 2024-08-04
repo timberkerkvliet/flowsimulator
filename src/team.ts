@@ -1,14 +1,20 @@
-class Team {
-    private members: any[];
+type Perspective = number;
 
-    constructor() {
-        this.members = ['T'];
-    }
+class Member {
+    constructor(readonly label: string, readonly perspectives: Perspective[]) {}
+}
+
+class Team {
+    constructor(private members: Member[]) {}
 
     getSize(): number {
         return this.members.length;
     }
 
+    getMembers(): Member[] {
+        return this.members;
+    }
+
 }
 
-export { Team }
+export { Team, Member, Perspective }

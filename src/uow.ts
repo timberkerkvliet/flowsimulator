@@ -1,4 +1,4 @@
-import { Team } from "./team";
+import { Team, Perspective } from "./team";
 
 class IdCounter {
     private static counter = 0;
@@ -14,17 +14,21 @@ interface ReadUnitOfWork {
     getId(): string;
     isFinished(): boolean;
     getProgress(): number;
+    getAssignees(): Team;
+    getCycleTime(): number;
 }
 
 class UnitOfWork implements ReadUnitOfWork {
     private id: string;
     private progress: number;
     private assignees: Team;
+    private time: number;
 
-    constructor() {
+    constructor(readonly perspectivesNeeded: Perspective[]) {
         this.id = `uow-${IdCounter.newId()}`;
         this.progress = 0;
-        this.assignees = new Team();
+        this.time = 0;
+        this.assignees = new Team([]);
     }
 
     getId(): string {
@@ -32,17 +36,22 @@ class UnitOfWork implements ReadUnitOfWork {
     }
 
     isFinished(): boolean {
-        return this.progress >= 1;
+        return this.progress === this.perspectivesNeeded.length;
+    }
+
+    getCycleTime(): number {
+        return this.time;
     }
 
     tick(): void {
         if (this.isFinished()) {
             return;
         }
+        this.time += 1;
         if (this.assignees.getSize() === 0) {
             return;
         }
-        this.progress += 0.1;
+        this.progress += 1;
     }
 
     assign(team: Team): void {
@@ -50,11 +59,11 @@ class UnitOfWork implements ReadUnitOfWork {
     }
 
     unassign(): void {
-        this.assignees = new Team();
+        this.assignees = new Team([]);
     }
 
     getProgress(): number {
-        return this.progress;
+        return this.progress / this.perspectivesNeeded.length;
     }
 
     getAssignees(): Team {

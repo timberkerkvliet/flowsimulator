@@ -6,6 +6,7 @@ import { Strategy } from "./strategy"
 interface ReadSimulation {
     getWorkInProgress(): ReadUnitOfWork[]
     getFinishedWork(): ReadUnitOfWork[]
+    getTime(): number;
 }
 
 class Simulation implements ReadSimulation {
@@ -16,6 +17,10 @@ class Simulation implements ReadSimulation {
     constructor(private team: Team, private strategy: Strategy, private renderer: Renderer) {
         this.time = 0;
         this.units = [];
+    }
+
+    getTime(): number {
+        return this.time;
     }
 
     getWorkInProgress(): UnitOfWork[] {

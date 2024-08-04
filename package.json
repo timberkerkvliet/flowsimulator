@@ -9,10 +9,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "typescript": "^5.2.2",
     "vite": "^5.3.4"
   },
   "dependencies": {
-    "gsap": "^3.12.5"
+    "gsap": "^3.12.5",
+    "jest": "^29.7.0"
   }
 }
