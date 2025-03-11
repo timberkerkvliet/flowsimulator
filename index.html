@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/gsap.min.js"></script>
-    <title>Team Simulation</title>
+    <title>Flow Simulation</title>
     <style>
         .uow {
             width: 60px;
@@ -16,26 +16,66 @@
             display: block;
             margin-bottom: 10px;
         }
-        .team {
+        #backlog {
             border-color: black;
             border-style: dotted;
-            width: 500px;
-            margin: 5%;
-            padding: 3%;
-            margin-top: 3px;
-            margin-bottom: 3px;
+            width: 200px;
+            min-height: 100px;
+            top: 20px;
+            left: 10px;
+            position: absolute;
+            text-align: center;
+            padding: 5px 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 15pt;
         }
-        .stats {
+        #inprogress {
+            border-color: black;
+            border-style: dotted;
+            width: 200px;
+            min-height: 100px;
+            top: 20px;
+            left: 240px;
+            position: absolute;
+            text-align: center;
+            padding: 5px 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 15pt;
+        }
+        #done {
+            border-color: black;
+            border-style: dotted;
+            width: 200px;
+            min-height: 100px;
+            top: 20px;
+            left: 470px;
+            position: absolute;
+            text-align: center;
+            padding: 5px 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 15pt;
+        }
+        #stats {
             position: absolute;
             top: 10px;
             right: 10px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 20pt;
+            align-content: center;
+        }
+        #startButton {
+            position: absolute;
+            top: 440px;
+            left: 10px;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             font-size: 20pt;
         }
     </style>
 </head>
 <body>
-    <div class="team" id="team"> </div>
+    <div class="workbox" id="backlog"></div>
+    <div class="workbox" id="inprogress"></div>
+    <div class="workbox" id="done"></div>
     <div class="stats" id="stats"></div>
     <button id="startButton">Start Simulation</button>
 

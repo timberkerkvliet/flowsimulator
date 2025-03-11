@@ -1,25 +1,38 @@
+
+import { BatchOfWorkFactory } from "./batch-of-work-factory";
+import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer";
-import { Simulation } from "./simulation"
-import { KeepBusyStrategy, MobStrategy } from "./strategy";
-import { Team, Member, Perspective } from "./team";
-import { UnitOfWorkFactory } from "./uow-factory";
+import { Simulation } from "./simulation";
+import { SimulationRunner } from "./simulation-runner"
+import { WorkDone } from "./work-done";
+import { WorkInProgress } from "./work-in-progress";
+import { WorkOnBacklog } from "./work-on-backlog";
 
 const button = document.getElementById('startButton');
 if (button) {
 button.addEventListener('click', async () => {
-    const simulation = new Simulation(
-        new Team(
-            [
-                new Member('A', [1]),
-                new Member('B', [2])
-            ]
-        ),
-        new KeepBusyStrategy(
-            new UnitOfWorkFactory(10)
-        ),
-        new Renderer()
-        );
     button.remove();
-    await simulation.run();
+
+    const batchOfWorkFactory = new BatchOfWorkFactory(
+        {
+            mu: 4,
+            lambda: 4
+        }
+    );
+
+    const simulation = new Simulation(
+        {
+            maxBatchSize: PositiveInteger.fromNumber(4),
+            backlog: WorkOnBacklog.newBacklog(batchOfWorkFactory),
+            inProgress: WorkInProgress.new(),
+            done: new WorkDone({work: [], time: PositiveInteger.fromNumber(1)})
+        }
+    )
+
+    const runner = new SimulationRunner(
+        simulation,
+        new Renderer()
+    )
+    await runner.run();
 });
 }

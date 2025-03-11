@@ -1,72 +1,57 @@
-import { Team } from "./team";
-import { UnitOfWork, ReadUnitOfWork } from "./uow"
-import { Renderer, SimulationState } from "./renderer"
-import { Strategy } from "./strategy"
-
+import { WorkDone } from "./work-done";
+import { WorkOnBacklog } from "./work-on-backlog";
+import { WorkInProgress } from "./work-in-progress";
+import { BatchOfWork } from "./batch-of-work";
+import { PositiveInteger } from "./positive-integer";
+import { max, min } from "../node_modules/simple-statistics/index";
 
 class Simulation {
-    private time: number;
-    private cumulativeWIP: number;
-    private units: UnitOfWork[];
-
-
-    constructor(private team: Team, private strategy: Strategy, private renderer: Renderer) {
-        this.time = 0;
-        this.cumulativeWIP = 0;
-        this.units = [];
-    }
-
-    getTime(): number {
-        return this.time;
-    }
-
-    private getWorkInProgress(): UnitOfWork[] {
-        return this.units.filter((uow) => !uow.isFinished())
-    }
-
-    private getFinishedWork(): UnitOfWork[] {
-        return this.units.filter((uow) => uow.isFinished())
-    }
-
-    private getState(): SimulationState {
-        const flow = this.getFinishedWork().length / this.getTime();
-        const cycleTime = this.getFinishedWork().map((x) => x.getCycleTime()).reduce((x, y) => x + y, 0) / this.getFinishedWork().length;
-        return {
-            time: this.time,
-            workInProgress: this.getWorkInProgress().map((uow) => {
-                return {
-                    id: uow.getId(),
-                    progress: uow.getProgress(),
-                    assignees: uow.getAssignees().getMembers().map((member) => member.label),
-                    perspective: uow.needsPerspective()
-                }
-            }),
-            flow: flow,
-            cycleTime: cycleTime,
-            wip: this.cumulativeWIP / this.time
+    constructor(
+        private readonly props: {
+            backlog: WorkOnBacklog,
+            inProgress: WorkInProgress,
+            done: WorkDone,
+            maxBatchSize: PositiveInteger
         }
+    ) { }
+
+    public workDone(): WorkDone {
+        return this.props.done;
     }
 
-    private tick(): void {
-
-        this.units.forEach((uow) => {
-            uow.tick();
-        });
-
-        this.units = this.getFinishedWork().concat(this.strategy.execute(this.team, this.getWorkInProgress()));
-        
-        
-        this.time += 1;
-        this.cumulativeWIP += this.getWorkInProgress().length;
+    public inProgress(): WorkInProgress {
+        return this.props.inProgress;
     }
 
-    async run() {
-        this.renderer.render(this.getState());
-        while (true) {
-            this.tick();
-            this.renderer.render(this.getState());
-            await new Promise(resolve => setTimeout(resolve, 300));
+    public backlog(): WorkOnBacklog {
+        return this.props.backlog;
+    }
+    
+    tick(): Simulation {
+        let backlog = this.props.backlog.tick();
+        let workInProgress = this.props.inProgress.tick();
+        let done = this.props.done.tick();
+
+        if (backlog.size().getValue() > 0 && workInProgress.canDoNewWork()) {
+            const batchSize = PositiveInteger.fromNumber(
+                min([backlog.size().getValue(), this.props.maxBatchSize.getValue()])
+            );
+            const batch = new BatchOfWork(backlog.topOfBacklog(batchSize));
+            backlog = backlog.removeTopOfBacklog(batchSize)
+            workInProgress = workInProgress.startWorkingOn(batch);
         }
+
+        done = done.finish(workInProgress.workDone());
+        workInProgress = workInProgress.removeWorkDone();
+
+        return new Simulation(
+            {
+                ...this.props,
+                backlog: backlog,
+                inProgress: workInProgress,
+                done: done
+            }
+        );
     }
 
 }
