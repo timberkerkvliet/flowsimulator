@@ -1,11 +1,14 @@
 import { Simulation } from "./simulation";
+import { WorkDone } from "./work-done";
+import { WorkInProgress } from "./work-in-progress";
+import { WorkOnBacklog } from "./work-on-backlog";
 
 class Renderer {
-    private backlog;
-    private inProgress;
-    private done;
-    private cycleTime;
-    private throughput;
+    private backlog: HTMLElement;
+    private inProgress: HTMLElement;
+    private done: HTMLElement;
+    private cycleTime: HTMLElement;
+    private throughput: HTMLElement;
 
     constructor() {
         this.backlog = document.getElementById('backlog');
@@ -16,59 +19,55 @@ class Renderer {
     }
 
     render(simulation: Simulation) {
+        this.renderBacklog(simulation.backlog());
+        this.renderProgress(simulation.inProgress());
+        this.renderDone(simulation.workDone());
+        this.renderStats(simulation.workDone());
+    }
+
+    private renderBacklog(workOnBacklog: WorkOnBacklog) {
         let html = "";
-        simulation.backlog().everything().forEach(
+        workOnBacklog.everything().forEach(
             (unit) => {
                 html += unit.id().charAt(0)
                 html += " ";
             }
         )
         this.backlog.innerHTML = html;
+    }
 
+    private renderProgress(workInProgress: WorkInProgress) {
         let html2 = "";
-        simulation.inProgress().everything().forEach(
+        workInProgress.everything().forEach(
             (batch) => {
                 batch.unitsOfWork.forEach(
                     (unit) => {
                         html2 += unit.id().charAt(0);
-                        html2 += " ";
+                        html2 += "<br>";
                     }
                 )
                 
             }
         )
         this.inProgress.innerHTML = html2;
+    }
 
-        html2 = "";
-        simulation.workDone().everything().forEach(
+    private renderDone(workDone: WorkDone) {
+        let html = "";
+        workDone.everything().forEach(
             (unit) => {
-                html2 += unit.id().charAt(0)
-                html2 += " ";
+                html += unit.id().charAt(0)
+                html += " ";
             }
         )
-        this.done.innerHTML = html2;
+        this.done.innerHTML = html;
+    }
 
-        this.cycleTime.innerHTML = simulation.workDone().averageCycleTime().toFixed(3);
-        this.throughput.innerHTML = simulation.workDone().throughPut().toFixed(3);
+    private renderStats(workDone: WorkDone) {
+        this.cycleTime.innerHTML = workDone.averageCycleTime().toFixed(3);
+        this.throughput.innerHTML = workDone.throughPut().toFixed(3);
+    }
 
-        // const uowDivs = this.teamDiv.getElementsByTagName('div');
-
-        // let existingIds: string[] = [];
-
-        // for (let i = 0; i < uowDivs.length; i++) {
-        //     const childDiv = uowDivs[i];
-        //     existingIds.push(childDiv.id);
-        // }
-
-        // this.createBoxes(simulation, existingIds);
-        // this.removeBoxes(simulation, existingIds);
-        // this.updateAssignees(simulation);
-        // this.updateColor(simulation);
-        // this.moveBoxes(simulation);
-        
-        // this.updateStats(simulation);
-
-         }
 }
 
 export { Renderer }
