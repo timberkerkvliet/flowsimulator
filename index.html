@@ -6,22 +6,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/gsap.min.js"></script>
     <title>Flow Simulation</title>
     <style>
-        .uow {
-            width: 60px;
-            height: 60px;
-            position: relative;
-            word-break: break-all;
+        #backlogtitle {
+            top: 10px;
+            left: 10px;
+            width: 200px;
+            position: absolute;
+            text-align: center;
+            padding: 5px 0;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
-            color: white;
-            display: block;
-            margin-bottom: 10px;
+            font-size: 15pt;
+        }
+        #inprogresstitle {
+            top: 10px;
+            left: 240px;
+            width: 200px;
+            position: absolute;
+            text-align: center;
+            padding: 5px 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 15pt;
+        }
+        #donetitle {
+            top: 10px;
+            left: 470px;
+            width: 200px;
+            position: absolute;
+            text-align: center;
+            padding: 5px 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 15pt;
         }
         #backlog {
             border-color: black;
             border-style: dotted;
             width: 200px;
             min-height: 100px;
-            top: 20px;
+            top: 50px;
             left: 10px;
             position: absolute;
             text-align: center;
@@ -34,7 +54,7 @@
             border-style: dotted;
             width: 200px;
             min-height: 100px;
-            top: 20px;
+            top: 50px;
             left: 240px;
             position: absolute;
             text-align: center;
@@ -47,7 +67,7 @@
             border-style: dotted;
             width: 200px;
             min-height: 100px;
-            top: 20px;
+            top: 50px;
             left: 470px;
             position: absolute;
             text-align: center;
@@ -55,30 +75,34 @@
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             font-size: 15pt;
         }
-        #stats {
+        #panel {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 20px;
+            left: 730px;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 20pt;
+            font-size: 15pt;
             align-content: center;
-        }
-        #startButton {
-            position: absolute;
-            top: 440px;
-            left: 10px;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 20pt;
         }
     </style>
 </head>
 <body>
-    <div class="workbox" id="backlog"></div>
-    <div class="workbox" id="inprogress"></div>
-    <div class="workbox" id="done"></div>
-    <div class="stats" id="stats"></div>
-    <button id="startButton">Start Simulation</button>
+    <div id="backlogtitle">waiting</div>
+    <div id="inprogresstitle">in progress</div>
+    <div id="donetitle">done</div>
 
+    <div id="backlog"></div>
+    <div id="inprogress"></div>
+    <div id="done"></div>
+
+    <div id="panel">
+        Avg cycle time: <span id="cycletime"></span><br>
+        Throughput: <span id="throughput"></span>
+        <br><br>
+        Utilization: <input type="text" id="utilization" value="0.8"><br>
+        Batch size: <input type="text" id="maxBatchSize" value="4"><br><br>
+        Random seed: <input type="text" id="randomSeed" value="fuchsia"><br><br>
+        <button id="startButton">Start Simulation</button>
+    </div>
     <script type="module" src="/src/start-simulation.ts">
     </script>
 

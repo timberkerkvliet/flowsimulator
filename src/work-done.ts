@@ -1,11 +1,12 @@
-import { sum } from "../node_modules/simple-statistics/index";
+import { median, average } from "../node_modules/simple-statistics/index";
 import { BatchOfWork } from "./batch-of-work"
 import { PositiveInteger } from "./positive-integer";
+import { UnitOfWork } from "./unit-of-work";
 
 class WorkDone {
     constructor(
         private readonly props: {
-            work: BatchOfWork[],
+            work: UnitOfWork[],
             time: PositiveInteger
         }
     ) {}
@@ -14,33 +15,45 @@ class WorkDone {
         return new WorkDone({...this.props, time: this.props.time.next()})
     }
 
-    public everything(): BatchOfWork[] {
+    public everything(): UnitOfWork[] {
         return this.props.work;
     }
 
-    public finish(batchesOfWork: BatchOfWork[]) {
+    public finish(batchOfWork: BatchOfWork) {
         return new WorkDone(
             {
                 ...this.props,
-                work: [...batchesOfWork, ...this.props.work]
+                work: [...batchOfWork.unitsOfWork, ...this.props.work]
             }
         )
     }
 
+    public medianCycleTime(): number {
+        if (this.props.work.length === 0) {
+            return NaN;
+        }
+        return median(this.props.work.map(
+            unit => unit.timeInSystem().getValue()
+        ));
+    }
+
     public averageCycleTime(): number {
-        return sum(this.props.work.map(
-            batch => batch.timeInSystem().getValue()
-        ))/this.props.work.length;
+        if (this.props.work.length === 0) {
+            return NaN;
+        }
+        return average(this.props.work.map(
+            unit => unit.timeInSystem().getValue()
+        ));
     }
 
     public averageProccessingDuration(): number {
-        return sum(this.props.work.map(
+        return average(this.props.work.map(
             batch => batch.timeInProgress().getValue()
-        ))/this.props.work.length;
+        ));
     }
 
     public throughPut(): number {
-        return sum(this.props.work.map(batch => batch.size().getValue()))/this.props.time.getValue();
+        return this.props.work.length/this.props.time.getValue();
     }
 
 }

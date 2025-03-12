@@ -3,7 +3,8 @@ import { WorkOnBacklog } from "./work-on-backlog";
 import { WorkInProgress } from "./work-in-progress";
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
-import { max, min } from "../node_modules/simple-statistics/index";
+import { min } from "../node_modules/simple-statistics/index";
+import { BatchOfWorkFactory } from "./unit-of-work-factory";
 
 class Simulation {
     constructor(
@@ -14,6 +15,24 @@ class Simulation {
             maxBatchSize: PositiveInteger
         }
     ) { }
+
+    public withWorkFactory(factory: BatchOfWorkFactory): Simulation {
+        return new Simulation(
+            {
+                ...this.props,
+                backlog: this.props.backlog.withWorkFactory(factory)
+            }
+        )
+    }
+
+    public withMaxBatchSize(value: PositiveInteger): Simulation {
+        return new Simulation(
+            {
+                ...this.props,
+                maxBatchSize: value
+            }
+        )
+    }
 
     public workDone(): WorkDone {
         return this.props.done;
@@ -32,16 +51,17 @@ class Simulation {
         let workInProgress = this.props.inProgress.tick();
         let done = this.props.done.tick();
 
-        if (backlog.size().getValue() > 0 && workInProgress.canDoNewWork()) {
-            const batchSize = PositiveInteger.fromNumber(
-                min([backlog.size().getValue(), this.props.maxBatchSize.getValue()])
-            );
-            const batch = new BatchOfWork(backlog.topOfBacklog(batchSize));
-            backlog = backlog.removeTopOfBacklog(batchSize)
+        if (backlog.size().getValue() >= this.props.maxBatchSize.getValue() && workInProgress.canDoNewWork()) {
+            
+            const batch = new BatchOfWork(backlog.topOfBacklog(this.props.maxBatchSize));
+            backlog = backlog.removeTopOfBacklog(this.props.maxBatchSize)
             workInProgress = workInProgress.startWorkingOn(batch);
         }
-
-        done = done.finish(workInProgress.workDone());
+        
+        for (const batch of workInProgress.workDone()) {
+            done = done.finish(batch);
+        }
+       
         workInProgress = workInProgress.removeWorkDone();
 
         return new Simulation(

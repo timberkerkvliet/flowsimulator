@@ -85,12 +85,13 @@ class UnitOfWork {
     }
 
     public static new(
+        id: string,
         timeOfArrival: PositiveInteger,
         processingDuration: PositiveInteger,
         arrivalDuration: PositiveInteger
         ) {
         return new UnitOfWork({
-            id: generateRandomString(10),
+            id: id,
             processDuration: processingDuration,
             arrivalDuration: arrivalDuration,
             timeOfArrival: timeOfArrival,

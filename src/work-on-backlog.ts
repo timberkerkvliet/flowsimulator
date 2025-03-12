@@ -1,4 +1,4 @@
-import { BatchOfWorkFactory } from "./batch-of-work-factory";
+import { BatchOfWorkFactory } from "./unit-of-work-factory";
 import { PositiveInteger } from "./positive-integer"
 import { UnitOfWork } from "./unit-of-work";
 
@@ -14,6 +14,15 @@ class WorkOnBacklog {
 
     public everything(): UnitOfWork[] {
         return this.props.unitsOfWork;
+    }
+
+    public withWorkFactory(factory: BatchOfWorkFactory) {
+        return new WorkOnBacklog(
+            {
+                ...this.props,
+                batchOfWorkFactory: factory
+            }
+        )
     }
 
     public static newBacklog(batchOfWorkFactory: BatchOfWorkFactory): WorkOnBacklog {

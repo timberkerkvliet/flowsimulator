@@ -1,20 +1,29 @@
+import { BatchOfWorkFactory } from "./unit-of-work-factory";
+import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer"
 import { Simulation } from "./simulation";
 
 
 class SimulationRunner {
     constructor(
-        private readonly simulation: Simulation,
+        private simulation: Simulation,
         private readonly renderer: Renderer
     ) {}
 
+    updateWorkFactory(factory: BatchOfWorkFactory) {
+        this.simulation = this.simulation.withWorkFactory(factory);
+    }
+
+    updateMaxBatchSize(value: PositiveInteger) {
+        this.simulation = this.simulation.withMaxBatchSize(value);
+    }
+
     async run() {
-        let simulation = this.simulation;
         while (true) {
             console.log("New iteration")
-            simulation = simulation.tick();
-            this.renderer.render(simulation);
-            await new Promise(resolve => setTimeout(resolve, 50));
+            this.simulation = this.simulation.tick();
+            this.renderer.render(this.simulation);
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
 
