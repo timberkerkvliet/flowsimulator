@@ -38,7 +38,8 @@ class UnitOfWorkFactory {
             arrivalDuration: arrivalDuration,
             timeOfArrival: time.add(arrivalDuration),
             timeStartProcessing: undefined,
-            timeDone: undefined
+            timeDone: undefined,
+            value: 1
         });
     }
     
