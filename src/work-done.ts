@@ -39,14 +39,8 @@ class WorkDone {
 
     public averageCycleTime(): number {
         if (this.props.work.length === 0) {
-            return NaN;
+            return 0;
         }
-        return average(this.props.work.map(
-            unit => unit.timeInSystem().getValue()
-        ));
-    }
-
-    public averageProccessingDuration(): number {
         return average(this.props.work.map(
             batch => batch.timeInProgress().getValue()
         ));
