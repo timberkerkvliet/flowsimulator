@@ -30,13 +30,10 @@ class UnitOfWorkFactory {
     ) {}
     
     public create(time: PositiveInteger): UnitOfWork {
-        const arrivalDuration = PositiveInteger.fromNumber(geometricRealization(this.props.lambda, this.props.randomSeed));
-        
         return new UnitOfWork({
             id: randomLetter(this.props.randomSeed),
             processDuration: PositiveInteger.fromNumber(geometricRealization(this.props.mu, this.props.randomSeed)),
-            arrivalDuration: arrivalDuration,
-            timeOfArrival: time.add(arrivalDuration),
+            timeOfArrival: time,
             timeStartProcessing: undefined,
             timeDone: undefined,
             value: 1
@@ -46,4 +43,4 @@ class UnitOfWorkFactory {
 
 }
 
-export { UnitOfWorkFactory as BatchOfWorkFactory }
+export { UnitOfWorkFactory }

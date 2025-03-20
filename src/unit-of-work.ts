@@ -4,7 +4,6 @@ class UnitOfWork {
     constructor(
         private readonly props: {
             id: string,
-            arrivalDuration: PositiveInteger,
             processDuration: PositiveInteger,
             timeOfArrival: PositiveInteger;
             timeStartProcessing: PositiveInteger | undefined,
@@ -61,10 +60,6 @@ class UnitOfWork {
             throw new Error();
         }
         return timeDone;
-    }
-
-    public arrivalDuration(): PositiveInteger {
-        return this.props.arrivalDuration;
     }
 
 }

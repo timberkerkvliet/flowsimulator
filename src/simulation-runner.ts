@@ -1,4 +1,4 @@
-import { BatchOfWorkFactory } from "./unit-of-work-factory";
+import { UnitOfWorkFactory } from "./unit-of-work-factory";
 import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer"
 import { Simulation } from "./simulation";
@@ -10,7 +10,7 @@ class SimulationRunner {
         private readonly renderer: Renderer
     ) {}
 
-    updateWorkFactory(factory: BatchOfWorkFactory) {
+    updateWorkFactory(factory: UnitOfWorkFactory) {
         this.simulation = this.simulation.withWorkFactory(factory);
     }
 

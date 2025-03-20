@@ -4,7 +4,7 @@ import { WorkInProgress } from "./work-in-progress";
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
 import { min } from "../node_modules/simple-statistics/index";
-import { BatchOfWorkFactory } from "./unit-of-work-factory";
+import { UnitOfWorkFactory } from "./unit-of-work-factory";
 
 class Simulation {
     constructor(
@@ -16,7 +16,7 @@ class Simulation {
         }
     ) { }
 
-    public withWorkFactory(factory: BatchOfWorkFactory): Simulation {
+    public withWorkFactory(factory: UnitOfWorkFactory): Simulation {
         return new Simulation(
             {
                 ...this.props,

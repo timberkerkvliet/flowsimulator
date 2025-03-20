@@ -1,4 +1,4 @@
-import { BatchOfWorkFactory } from "./unit-of-work-factory";
+import { UnitOfWorkFactory } from "./unit-of-work-factory";
 import { PositiveInteger } from "./positive-integer"
 import { UnitOfWork } from "./unit-of-work";
 
@@ -6,9 +6,9 @@ class WorkOnBacklog {
     constructor(
         private readonly props: {
             unitsOfWork: UnitOfWork[],
-            nextUnitOfWork: UnitOfWork,
             currentTime: PositiveInteger,
-            batchOfWorkFactory: BatchOfWorkFactory
+            unitOfWorkFactory: UnitOfWorkFactory,
+            size: PositiveInteger
         }
     ) { }
 
@@ -16,22 +16,23 @@ class WorkOnBacklog {
         return this.props.unitsOfWork;
     }
 
-    public withWorkFactory(factory: BatchOfWorkFactory) {
+    public withWorkFactory(factory: UnitOfWorkFactory) {
         return new WorkOnBacklog(
             {
                 ...this.props,
-                batchOfWorkFactory: factory
+                unitOfWorkFactory: factory
             }
         )
     }
 
-    public static newBacklog(batchOfWorkFactory: BatchOfWorkFactory): WorkOnBacklog {
+    public static newBacklog(unitOfWorkFactory: UnitOfWorkFactory, size: PositiveInteger): WorkOnBacklog {
+        const time = PositiveInteger.fromNumber(1);
         return new WorkOnBacklog(
             {
-                unitsOfWork: [],
-                nextUnitOfWork: batchOfWorkFactory.create(PositiveInteger.fromNumber(1)),
-                currentTime: PositiveInteger.fromNumber(1),
-                batchOfWorkFactory
+                unitsOfWork: Array.from({ length: size.getValue() }, () => unitOfWorkFactory.create(time)),
+                currentTime: time,
+                unitOfWorkFactory,
+                size: size
             }
         )
     }
@@ -47,37 +48,27 @@ class WorkOnBacklog {
         return new WorkOnBacklog(
             {
                 ...this.props,
-                unitsOfWork: this.props.unitsOfWork.slice(n.getValue())
+                unitsOfWork: [
+                    ...this.props.unitsOfWork.slice(n.getValue()),
+                    ...Array.from(
+                        { length: n.getValue() },
+                        () => this.props.unitOfWorkFactory.create(this.props.currentTime)
+                    )
+                ]
             }
         )
     }
 
     public size(): PositiveInteger {
-        return PositiveInteger.fromNumber(this.props.unitsOfWork.length);
+        return this.props.size;
     }
 
     public tick(): WorkOnBacklog {
         const time = this.props.currentTime.next();
-        
-        if (this.props.nextUnitOfWork.timeOfArrival().getValue() > time.getValue()) {
-            return new WorkOnBacklog(
-                {
-                    ...this.props,
-                    currentTime: time,
-                    unitsOfWork: this.props.unitsOfWork,
-                    nextUnitOfWork: this.props.nextUnitOfWork
-                }
-            )
-        }
-
-        const unitsOfWork = [...this.props.unitsOfWork, this.props.nextUnitOfWork];
-        const nextUnitOfWork = this.props.batchOfWorkFactory.create(time);
         return new WorkOnBacklog(
             {
                 ...this.props,
-                currentTime: time,
-                unitsOfWork,
-                nextUnitOfWork
+                currentTime: time
             }
         )
     }

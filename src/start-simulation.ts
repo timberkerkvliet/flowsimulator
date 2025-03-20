@@ -1,5 +1,5 @@
 
-import { BatchOfWorkFactory } from "./unit-of-work-factory";
+import { UnitOfWorkFactory } from "./unit-of-work-factory";
 import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer";
 import { Simulation } from "./simulation";
@@ -23,7 +23,7 @@ if (button) {
     button.addEventListener('click', async () => {
         button.textContent = "Update";
 
-        const batchOfWorkFactory = new BatchOfWorkFactory(
+        const batchOfWorkFactory = new UnitOfWorkFactory(
             {
                 mu: 0.25,
                 lambda: 0.25 * parseFloat(utilization.value),
@@ -35,7 +35,7 @@ if (button) {
             const simulation = new Simulation(
                 {
                     maxBatchSize: PositiveInteger.fromNumber(parseFloat(maxBatchSize.value)),
-                    backlog: WorkOnBacklog.newBacklog(batchOfWorkFactory),
+                    backlog: WorkOnBacklog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30)),
                     inProgress: WorkInProgress.new(),
                     done: new WorkDone({work: [], time: PositiveInteger.fromNumber(1)})
                 }
