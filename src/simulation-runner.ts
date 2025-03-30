@@ -1,28 +1,36 @@
 import { UnitOfWorkFactory } from "./unit-of-work-factory";
 import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer"
-import { Simulation } from "./simulation";
+import { Team } from "./team";
+import { Strategy } from "./strategy";
 
 
 class SimulationRunner {
     constructor(
-        private simulation: Simulation,
+        private team: Team,
         private readonly renderer: Renderer
     ) {}
 
     updateWorkFactory(factory: UnitOfWorkFactory) {
-        this.simulation = this.simulation.withWorkFactory(factory);
+        this.team = this.team.withBacklog(
+            this.team.backlog().withWorkFactory(factory)
+        );
     }
 
     updateMaxBatchSize(value: PositiveInteger) {
-        this.simulation = this.simulation.withMaxBatchSize(value);
+        this.team = this.team.withStrategy(
+            new Strategy(
+                {
+                    batchSize: value
+                }
+            )
+        )
     }
 
     async run() {
         while (true) {
-            console.log("New iteration")
-            this.simulation = this.simulation.tick();
-            this.renderer.render(this.simulation);
+            this.team = this.team.tick();
+            this.renderer.render(this.team);
             await new Promise(resolve => setTimeout(resolve, 100));
         }
     }

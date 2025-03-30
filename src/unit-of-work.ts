@@ -4,54 +4,47 @@ class UnitOfWork {
     constructor(
         private readonly props: {
             id: string,
-            processDuration: PositiveInteger,
-            timeOfArrival: PositiveInteger;
-            timeStartProcessing: PositiveInteger | undefined,
-            timeDone: PositiveInteger | undefined,
-            value: number
+            toGo: PositiveInteger,
+            timeStart: PositiveInteger | undefined,
+            timeDone: PositiveInteger | undefined
         }
     ) {}
-
-    public startProcessing(atTime: PositiveInteger): UnitOfWork {
-        return new UnitOfWork(
-            {
-                ...this.props,
-                timeStartProcessing: atTime
-            }
-        )
-    }
-
-    public endProcessing(atTime: PositiveInteger): UnitOfWork {
-        return new UnitOfWork(
-            {
-                ...this.props,
-                timeDone: atTime
-            }
-        )
-    }
 
     public id(): string {
         return this.props.id;
     }
 
-    public timeOfArrival(): PositiveInteger {
-        return this.props.timeOfArrival;
+    public timeStart(): PositiveInteger {
+        return this.props.timeStart;
     }
 
-    public timeStartProcessing(): PositiveInteger {
-        return this.props.timeStartProcessing;
+    public progress(time: PositiveInteger, assignees: PositiveInteger[]): UnitOfWork {
+        if (assignees.length === 0 || this.isDone()) {
+            return this;
+        }
+        if (this.props.timeStart === undefined) {
+            return new UnitOfWork({...this.props, timeStart: time})
+        }
+
+        let toGo = this.props.toGo;
+        toGo = toGo.minus(PositiveInteger.fromNumber(1));
+        let timeDone = toGo.isZero() ? time : undefined;
+
+        return new UnitOfWork(
+            {
+                ...this.props,
+                toGo,
+                timeDone
+            }
+        )
     }
 
-    public processDuration(): PositiveInteger {
-        return this.props.processDuration;
-    }
-
-    public timeInSystem(): PositiveInteger {
-        return this.props.timeDone.minus(this.props.timeOfArrival);
+    public isDone(): boolean {
+        return this.props.timeDone !== undefined;
     }
 
     public timeInProgress(): PositiveInteger {
-        return this.props.timeDone.minus(this.props.timeStartProcessing);
+        return this.props.timeDone.minus(this.props.timeStart);
     }
 
     public timeDone(): PositiveInteger {
@@ -65,3 +58,7 @@ class UnitOfWork {
 }
 
 export { UnitOfWork }
+
+function ONE(ONE: any): PositiveInteger {
+    throw new Error("Function not implemented.");
+}

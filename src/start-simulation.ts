@@ -2,16 +2,14 @@
 import { UnitOfWorkFactory } from "./unit-of-work-factory";
 import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer";
-import { Simulation } from "./simulation";
 import { SimulationRunner } from "./simulation-runner"
-import { WorkDone } from "./work-done";
-import { WorkInProgress } from "./work-in-progress";
+import { Team } from "./team";
 import { WorkOnBacklog } from "./work-on-backlog";
 import seedrandom from 'seedrandom';
+import { Strategy } from "./strategy";
 
 const button = document.getElementById('startButton');
 const maxBatchSize = document.getElementById('maxBatchSize') as HTMLInputElement;
-const utilization = document.getElementById('utilization') as HTMLInputElement;
 const randomSeed = document.getElementById('randomSeed') as HTMLInputElement;
 
 
@@ -26,23 +24,18 @@ if (button) {
         const batchOfWorkFactory = new UnitOfWorkFactory(
             {
                 mu: 0.25,
-                lambda: 0.25 * parseFloat(utilization.value),
                 randomSeed: seedrandom(randomSeed.value)
             }
         );
         
         if (SimulationState.runner === undefined) {
-            const simulation = new Simulation(
-                {
-                    maxBatchSize: PositiveInteger.fromNumber(parseFloat(maxBatchSize.value)),
-                    backlog: WorkOnBacklog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30)),
-                    inProgress: WorkInProgress.new(),
-                    done: new WorkDone({work: [], time: PositiveInteger.fromNumber(1)})
-                }
+            const team = Team.new(
+                WorkOnBacklog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30)),
+                new Strategy({batchSize: PositiveInteger.fromNumber(parseFloat(maxBatchSize.value))})
             )
 
             const runner = new SimulationRunner(
-                simulation,
+                team,
                 new Renderer()
             )
 

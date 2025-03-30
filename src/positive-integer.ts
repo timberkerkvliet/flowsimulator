@@ -3,7 +3,7 @@ class PositiveInteger {
 
     constructor(value: number) {
         if (!Number.isInteger(value) || value < 0) {
-            throw new Error("Value must be a positive integer.");
+            throw new Error("Value must be a positive integer: " + value);
         }
         this.value = value;
     }
@@ -33,6 +33,10 @@ class PositiveInteger {
             return false;
         }
         return this.value === other.value;
+    }
+
+    isZero(): boolean {
+        return this.value === 0;
     }
 
     toString(): string {

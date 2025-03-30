@@ -6,7 +6,6 @@ class WorkOnBacklog {
     constructor(
         private readonly props: {
             unitsOfWork: UnitOfWork[],
-            currentTime: PositiveInteger,
             unitOfWorkFactory: UnitOfWorkFactory,
             size: PositiveInteger
         }
@@ -29,8 +28,7 @@ class WorkOnBacklog {
         const time = PositiveInteger.fromNumber(1);
         return new WorkOnBacklog(
             {
-                unitsOfWork: Array.from({ length: size.getValue() }, () => unitOfWorkFactory.create(time)),
-                currentTime: time,
+                unitsOfWork: Array.from({ length: size.getValue() }, () => unitOfWorkFactory.create()),
                 unitOfWorkFactory,
                 size: size
             }
@@ -44,31 +42,20 @@ class WorkOnBacklog {
         return this.props.unitsOfWork.slice(0, n.getValue());
     }
 
-    public removeTopOfBacklog(n: PositiveInteger): WorkOnBacklog {
-        return new WorkOnBacklog(
-            {
-                ...this.props,
-                unitsOfWork: [
-                    ...this.props.unitsOfWork.slice(n.getValue()),
-                    ...Array.from(
-                        { length: n.getValue() },
-                        () => this.props.unitOfWorkFactory.create(this.props.currentTime)
-                    )
-                ]
-            }
+    public remove(units: UnitOfWork[]): WorkOnBacklog {
+        const ids = units.map(unit => unit.id());
+        let unitsOfWork = this.props.unitsOfWork;
+        unitsOfWork = unitsOfWork.filter(
+            unit => !ids.includes(unit.id())
         )
-    }
+        while (unitsOfWork.length < this.props.size.getValue()) {
+            unitsOfWork = [...unitsOfWork, this.props.unitOfWorkFactory.create()]
+        }
 
-    public size(): PositiveInteger {
-        return this.props.size;
-    }
-
-    public tick(): WorkOnBacklog {
-        const time = this.props.currentTime.next();
         return new WorkOnBacklog(
             {
                 ...this.props,
-                currentTime: time
+                unitsOfWork
             }
         )
     }

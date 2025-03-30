@@ -1,52 +1,43 @@
-import { sum } from "../node_modules/simple-statistics/index"
+import { max, min } from "../node_modules/simple-statistics/index"
 import { PositiveInteger } from "./positive-integer"
 import { UnitOfWork } from "./unit-of-work"
 
 class BatchOfWork {
     constructor(public readonly unitsOfWork: UnitOfWork[]) {}
 
-    startWork(time: PositiveInteger): BatchOfWork {
-        return new BatchOfWork(
-            this.unitsOfWork.map(unit => unit.startProcessing(time))
-        )
-    }
+    progress(time: PositiveInteger, assigness: PositiveInteger[]): BatchOfWork {
+        const unitsOfWork = this.unitsOfWork;
+        const notDoneIndex = unitsOfWork.findIndex(unit => !unit.isDone())
 
-    endWork(time: PositiveInteger): BatchOfWork {
         return new BatchOfWork(
-            this.unitsOfWork.map(unit => unit.endProcessing(time))
-        )
+            unitsOfWork.map((unit, index) => 
+                index === notDoneIndex ? unit.progress(time, assigness): unit
+            )
+        );
     }
 
     public timeDone(): PositiveInteger {
-        const totalProcessingTime = sum(
-            this.unitsOfWork.map(unit => unit.processDuration().getValue())
-        );
-
-        return this.unitsOfWork[0].timeStartProcessing().add(
-            PositiveInteger.fromNumber(totalProcessingTime)
+        return PositiveInteger.fromNumber(
+            max(this.unitsOfWork.map(unit => unit.timeDone().getValue()))
         );
     }
 
-    public timeInSystem(): PositiveInteger {
-        return PositiveInteger.fromNumber(sum(
-            this.unitsOfWork.map(
-                unit => unit.timeInSystem().getValue()
-            )
-        ));
+    public timeStart(): PositiveInteger {
+        return PositiveInteger.fromNumber(
+            min(this.unitsOfWork.map(unit => unit.timeStart().getValue()))
+        );
+    }
+
+    public isDone(): boolean {
+        return this.unitsOfWork.map(unit => unit.isDone()).every(x => x);
     }
 
     public timeInProgress(): PositiveInteger {
-        return this.unitsOfWork[0].timeInProgress();
+        return this.timeDone().minus(this.timeStart());
     }
 
     public size(): PositiveInteger {
         return PositiveInteger.fromNumber(this.unitsOfWork.length);
-    }
-
-    public slize(): BatchOfWork[] {
-        return this.unitsOfWork.map(
-            unit => new BatchOfWork([unit])
-        )
     }
 
 }

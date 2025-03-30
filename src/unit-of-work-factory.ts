@@ -14,29 +14,31 @@ function geometricRealization(p: number, randomSeed: () => number): number {
     return count;
 }
 
-function randomLetter(randomSeed: () => number): string {
+function randomLetters(randomSeed: () => number): string {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const index = Math.floor(randomSeed() * alphabet.length);
-    return alphabet[index];
+    let result = "";
+    for (let i = 0; i < 16; i++) {
+        const index = Math.floor(randomSeed() * alphabet.length);
+        result += alphabet[index];
+    }
+    return result;
 }
+
 
 class UnitOfWorkFactory {
     constructor(
         private readonly props: {
-            lambda: number,
             mu: number,
             randomSeed: () => number
         }
     ) {}
     
-    public create(time: PositiveInteger): UnitOfWork {
+    public create(): UnitOfWork {
         return new UnitOfWork({
-            id: randomLetter(this.props.randomSeed),
-            processDuration: PositiveInteger.fromNumber(geometricRealization(this.props.mu, this.props.randomSeed)),
-            timeOfArrival: time,
-            timeStartProcessing: undefined,
-            timeDone: undefined,
-            value: 1
+            id: randomLetters(this.props.randomSeed),
+            toGo: PositiveInteger.fromNumber(geometricRealization(this.props.mu, this.props.randomSeed)),
+            timeStart: undefined,
+            timeDone: undefined
         });
     }
     

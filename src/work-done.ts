@@ -1,4 +1,4 @@
-import { median, average } from "../node_modules/simple-statistics/index";
+import { average, sum } from "../node_modules/simple-statistics/index";
 import { BatchOfWork } from "./batch-of-work"
 import { PositiveInteger } from "./positive-integer";
 import { UnitOfWork } from "./unit-of-work";
@@ -6,7 +6,7 @@ import { UnitOfWork } from "./unit-of-work";
 class WorkDone {
     constructor(
         private readonly props: {
-            work: UnitOfWork[],
+            work: BatchOfWork[],
             time: PositiveInteger
         }
     ) {}
@@ -16,25 +16,18 @@ class WorkDone {
     }
 
     public everything(): UnitOfWork[] {
-        return this.props.work;
+        return this.props.work.reduce((acc, val) => acc.concat(val.unitsOfWork), [])
     }
 
-    public finish(batchOfWork: BatchOfWork) {
+    public add(batchesOfWork: BatchOfWork[]) {
+        let work = this.props.work;
+        batchesOfWork.forEach(batch => work = [batch, ...work]);
         return new WorkDone(
             {
                 ...this.props,
-                work: [...batchOfWork.unitsOfWork, ...this.props.work]
+                work: work
             }
         )
-    }
-
-    public medianCycleTime(): number {
-        if (this.props.work.length === 0) {
-            return NaN;
-        }
-        return median(this.props.work.map(
-            unit => unit.timeInSystem().getValue()
-        ));
     }
 
     public averageCycleTime(): number {
@@ -47,7 +40,7 @@ class WorkDone {
     }
 
     public throughPut(): number {
-        return this.props.work.length/this.props.time.getValue();
+        return sum(this.props.work.map(batch => batch.size().getValue()))/this.props.time.getValue();
     }
 
 }

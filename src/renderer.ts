@@ -1,6 +1,5 @@
-import { Simulation } from "./simulation";
 import { WorkDone } from "./work-done";
-import { WorkInProgress } from "./work-in-progress";
+import { Team } from "./team";
 import { WorkOnBacklog } from "./work-on-backlog";
 
 class Renderer {
@@ -18,11 +17,11 @@ class Renderer {
         this.throughput = document.getElementById('throughput');
     }
 
-    render(simulation: Simulation) {
-        this.renderBacklog(simulation.backlog());
-        this.renderProgress(simulation.inProgress());
-        this.renderDone(simulation.workDone());
-        this.renderStats(simulation.workDone());
+    render(team: Team) {
+        this.renderBacklog(team.backlog());
+        this.renderProgress(team);
+        this.renderDone(team.workDone());
+        this.renderStats(team.workDone());
     }
 
     private renderBacklog(workOnBacklog: WorkOnBacklog) {
@@ -36,9 +35,9 @@ class Renderer {
         this.backlog.innerHTML = html;
     }
 
-    private renderProgress(workInProgress: WorkInProgress) {
+    private renderProgress(team: Team) {
         let html2 = "";
-        workInProgress.everything().forEach(
+        team.workInProgress().forEach(
             (batch) => {
                 batch.unitsOfWork.forEach(
                     (unit) => {
