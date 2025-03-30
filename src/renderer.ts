@@ -1,6 +1,6 @@
 import { WorkDone } from "./work-done";
 import { Team } from "./team";
-import { WorkOnBacklog } from "./work-on-backlog";
+import { Backlog } from "./backlog";
 
 class Renderer {
     private backlog: HTMLElement;
@@ -24,7 +24,7 @@ class Renderer {
         this.renderStats(team.workDone());
     }
 
-    private renderBacklog(workOnBacklog: WorkOnBacklog) {
+    private renderBacklog(workOnBacklog: Backlog) {
         let html = "";
         workOnBacklog.everything().forEach(
             (unit) => {

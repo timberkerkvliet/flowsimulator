@@ -2,7 +2,7 @@ import { UnitOfWorkFactory } from "./unit-of-work-factory";
 import { PositiveInteger } from "./positive-integer"
 import { UnitOfWork } from "./unit-of-work";
 
-class WorkOnBacklog {
+class Backlog {
     constructor(
         private readonly props: {
             unitsOfWork: UnitOfWork[],
@@ -16,7 +16,7 @@ class WorkOnBacklog {
     }
 
     public withWorkFactory(factory: UnitOfWorkFactory) {
-        return new WorkOnBacklog(
+        return new Backlog(
             {
                 ...this.props,
                 unitOfWorkFactory: factory
@@ -24,9 +24,9 @@ class WorkOnBacklog {
         )
     }
 
-    public static newBacklog(unitOfWorkFactory: UnitOfWorkFactory, size: PositiveInteger): WorkOnBacklog {
+    public static newBacklog(unitOfWorkFactory: UnitOfWorkFactory, size: PositiveInteger): Backlog {
         const time = PositiveInteger.fromNumber(1);
-        return new WorkOnBacklog(
+        return new Backlog(
             {
                 unitsOfWork: Array.from({ length: size.getValue() }, () => unitOfWorkFactory.create()),
                 unitOfWorkFactory,
@@ -42,7 +42,7 @@ class WorkOnBacklog {
         return this.props.unitsOfWork.slice(0, n.getValue());
     }
 
-    public remove(units: UnitOfWork[]): WorkOnBacklog {
+    public remove(units: UnitOfWork[]): Backlog {
         const ids = units.map(unit => unit.id());
         let unitsOfWork = this.props.unitsOfWork;
         unitsOfWork = unitsOfWork.filter(
@@ -52,7 +52,7 @@ class WorkOnBacklog {
             unitsOfWork = [...unitsOfWork, this.props.unitOfWorkFactory.create()]
         }
 
-        return new WorkOnBacklog(
+        return new Backlog(
             {
                 ...this.props,
                 unitsOfWork
@@ -62,4 +62,4 @@ class WorkOnBacklog {
 
 }
 
-export { WorkOnBacklog }
+export { Backlog }

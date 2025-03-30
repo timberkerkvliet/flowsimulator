@@ -1,7 +1,7 @@
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
 import { WorkAssignment, WorkAssignments } from "./work-assignment";
-import { WorkOnBacklog } from "./work-on-backlog";
+import { Backlog } from "./backlog";
 
 class Strategy {
     constructor(
@@ -10,7 +10,7 @@ class Strategy {
         }
     ) {}
 
-    execute(current: WorkAssignments, backlog: WorkOnBacklog): WorkAssignments {
+    execute(current: WorkAssignments, backlog: Backlog): WorkAssignments {
         if (current.number().equals(PositiveInteger.fromNumber(1))) {
             return current
         }

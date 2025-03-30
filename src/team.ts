@@ -3,12 +3,12 @@ import { PositiveInteger } from "./positive-integer"
 import { Strategy } from "./strategy";
 import { WorkAssignments } from "./work-assignment";
 import { WorkDone } from "./work-done";
-import { WorkOnBacklog } from "./work-on-backlog";
+import { Backlog } from "./backlog";
 
 class Team {
     constructor(
         private readonly props: {
-            backlog: WorkOnBacklog,
+            backlog: Backlog,
             workingOn: WorkAssignments,
             strategy: Strategy,
             done: WorkDone,
@@ -16,7 +16,7 @@ class Team {
         }
     ) {}
 
-    public static new(backlog: WorkOnBacklog, strategy: Strategy): Team {
+    public static new(backlog: Backlog, strategy: Strategy): Team {
         return new Team(
             {
                 backlog: backlog,
@@ -28,7 +28,7 @@ class Team {
         );
     }
 
-    public backlog(): WorkOnBacklog {
+    public backlog(): Backlog {
         return this.props.backlog;
     }
 
@@ -36,7 +36,7 @@ class Team {
         return new Team({...this.props, strategy})
     }
 
-    public withBacklog(backlog: WorkOnBacklog): Team {
+    public withBacklog(backlog: Backlog): Team {
         return new Team({...this.props, backlog})
     }
 

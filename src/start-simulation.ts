@@ -4,7 +4,7 @@ import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer";
 import { SimulationRunner } from "./simulation-runner"
 import { Team } from "./team";
-import { WorkOnBacklog } from "./work-on-backlog";
+import { Backlog } from "./backlog";
 import seedrandom from 'seedrandom';
 import { Strategy } from "./strategy";
 
@@ -30,7 +30,7 @@ if (button) {
         
         if (SimulationState.runner === undefined) {
             const team = Team.new(
-                WorkOnBacklog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30)),
+                Backlog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30)),
                 new Strategy({batchSize: PositiveInteger.fromNumber(parseFloat(maxBatchSize.value))})
             )
 
