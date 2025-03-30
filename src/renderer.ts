@@ -36,19 +36,28 @@ class Renderer {
     }
 
     private renderProgress(team: Team) {
-        let html2 = "";
-        team.workInProgress().forEach(
-            (batch) => {
-                batch.unitsOfWork.forEach(
+        let html = "<table>";
+        team.workInProgress().assignments().forEach(
+            (assignment) => {
+                html += "<tr><td>"
+                assignment.batch().unitsOfWork.forEach(
                     (unit) => {
-                        html2 += unit.id().charAt(0);
-                        html2 += "<br>";
+                        html += unit.id().charAt(0);
+                        html += " ";
                     }
                 )
-                
+                html += "<td>"
+                assignment.assignees().forEach(
+                    (assignee) => {
+                        html += assignee.getValue()
+                        html += " "
+                    }
+                )
+                html += "</tr>"
             }
         )
-        this.inProgress.innerHTML = html2;
+        html += "</tr>"
+        this.inProgress.innerHTML = html;
     }
 
     private renderDone(workDone: WorkDone) {

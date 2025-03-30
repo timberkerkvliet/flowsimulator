@@ -40,8 +40,8 @@ class Team {
         return new Team({...this.props, backlog})
     }
 
-    public workInProgress(): BatchOfWork[] {
-        return this.props.workingOn.batches();
+    public workInProgress(): WorkAssignments {
+        return this.props.workingOn;
     }
 
     public workDone(): WorkDone {

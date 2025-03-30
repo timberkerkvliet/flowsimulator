@@ -50,15 +50,14 @@
             font-size: 15pt;
         }
         #inprogress {
-            border-color: black;
-            border-style: dotted;
+            border-width: 0px;
             width: 200px;
             min-height: 100px;
             top: 50px;
             left: 240px;
             position: absolute;
             text-align: center;
-            padding: 5px 0;
+            padding: 0px 0;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             font-size: 15pt;
         }
@@ -82,6 +81,22 @@
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             font-size: 15pt;
             align-content: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid black dotted;
+        }
+
+        th, td {
+            border: 1px dotted black;
+            padding: 5px;
+            text-align: center;
+            width: 100px; /* Set fixed width for columns */
+        }
+
+        th {
+            background-color: #f2f2f2; /* Optional: Add background for headers */
         }
     </style>
 </head>

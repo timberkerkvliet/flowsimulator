@@ -13,6 +13,9 @@ class WorkAssignment {
     batch(): BatchOfWork {
         return this.props.batch;
     }
+    assignees(): PositiveInteger[] {
+        return this.props.assignees;
+    }
 
     progress(time: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
@@ -44,6 +47,10 @@ class WorkAssignments {
         return this.props.assignments
         .map(assignment => assignment.batch().unitsOfWork)
         .reduce((acc, val) => acc.concat(val), [])
+    }
+
+    assignments(): WorkAssignment[] {
+        return this.props.assignments;
     }
 
     getDone(): BatchOfWork[] {
