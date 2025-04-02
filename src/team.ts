@@ -55,24 +55,23 @@ class Team {
     }
 
     public tick(): Team {
-        const time = this.props.currentTime.next();
+        const time = this.props.currentTime;
         let done = this.props.done;
         let workingOn = this.props.workingOn;
         let backlog = this.props.backlog;
 
+        workingOn = workingOn.progress(time);
         done = done.add(workingOn.getDone());
         workingOn = workingOn.removeDone();
-
-        ({ assignments: workingOn, backlog }  = this.props.strategy.execute(workingOn, backlog, this.props.teamSize));
-        workingOn = workingOn.progress(time);
+        ({ assignments: workingOn, backlog }  = this.props.strategy.execute(workingOn, backlog, this.props.teamSize, time));
 
         return new Team(
             {
                 ...this.props,
-                backlog: backlog,
-                workingOn: workingOn,
+                backlog,
+                workingOn,
                 done: done.tick(),
-                currentTime: time
+                currentTime: time.next()
             }
         );
     }

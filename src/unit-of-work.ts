@@ -19,17 +19,18 @@ class UnitOfWork {
         return this.props.timeStart;
     }
 
+    public start(time: PositiveInteger): UnitOfWork {
+        return new UnitOfWork({...this.props, timeStart: time})
+    }
+
     public progress(time: PositiveInteger, assignees: PositiveInteger[]): UnitOfWork {
         if (assignees.length === 0 || this.isDone()) {
             return this;
         }
-        if (this.props.timeStart === undefined) {
-            return new UnitOfWork({...this.props, timeStart: time})
-        }
 
         let timeDone = undefined;
 
-        if (this.props.randomSeed() <= this.props.baseProbability) {
+        if (this.props.randomSeed() <= this.props.baseProbability * assignees.length) {
             timeDone = time;
         }
 
