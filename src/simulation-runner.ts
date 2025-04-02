@@ -17,14 +17,14 @@ class SimulationRunner {
         );
     }
 
-    updateMaxBatchSize(value: PositiveInteger) {
+    updateStrategy(strategy: Strategy) {
         this.team = this.team.withStrategy(
-            new Strategy(
-                {
-                    batchSize: value
-                }
-            )
+            strategy
         )
+    }
+
+    updateTeamSize(teamSize: PositiveInteger) {
+        this.team = this.team.withSize(teamSize);
     }
 
     async run() {

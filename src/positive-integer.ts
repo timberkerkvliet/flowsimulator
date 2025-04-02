@@ -35,6 +35,27 @@ class PositiveInteger {
         return this.value === other.value;
     }
 
+    lessThan(other: PositiveInteger): boolean {
+        if (!(other instanceof PositiveInteger)) {
+            return false;
+        }
+        return this.value < other.value;
+    }
+
+    geq(other: PositiveInteger): boolean {
+        if (!(other instanceof PositiveInteger)) {
+            return false;
+        }
+        return this.value >= other.value;
+    }
+
+    leq(other: PositiveInteger): boolean {
+        if (!(other instanceof PositiveInteger)) {
+            return false;
+        }
+        return this.value <= other.value;
+    }
+
     isZero(): boolean {
         return this.value === 0;
     }

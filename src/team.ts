@@ -12,18 +12,20 @@ class Team {
             workingOn: WorkAssignments,
             strategy: Strategy,
             done: WorkDone,
-            currentTime: PositiveInteger
+            currentTime: PositiveInteger,
+            teamSize: PositiveInteger
         }
     ) {}
 
-    public static new(backlog: Backlog, strategy: Strategy): Team {
+    public static new(backlog: Backlog, strategy: Strategy, size: PositiveInteger): Team {
         return new Team(
             {
                 backlog: backlog,
                 workingOn: new WorkAssignments({assignments: []}),
                 done: new WorkDone({work: [], time: PositiveInteger.fromNumber(1)}),
                 currentTime: PositiveInteger.fromNumber(1),
-                strategy: strategy
+                strategy: strategy,
+                teamSize: size
             }
         );
     }
@@ -38,6 +40,10 @@ class Team {
 
     public withBacklog(backlog: Backlog): Team {
         return new Team({...this.props, backlog})
+    }
+
+    public withSize(size: PositiveInteger): Team {
+        return new Team({...this.props, teamSize: size});
     }
 
     public workInProgress(): WorkAssignments {
@@ -56,18 +62,18 @@ class Team {
 
         done = done.add(workingOn.getDone());
         workingOn = workingOn.removeDone()
-        workingOn = this.props.strategy.execute(workingOn, backlog)
+        workingOn = this.props.strategy.execute(workingOn, backlog, this.props.teamSize)
         backlog = backlog.remove(workingOn.units())
 
         workingOn = workingOn.progress(time);
 
         return new Team(
             {
+                ...this.props,
                 backlog: backlog,
                 workingOn: workingOn,
                 done: done.tick(),
-                currentTime: time,
-                strategy: this.props.strategy
+                currentTime: time
             }
         );
     }

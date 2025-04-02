@@ -101,7 +101,7 @@
     </style>
 </head>
 <body>
-    <div id="backlogtitle">available</div>
+    <div id="backlogtitle">backlog</div>
     <div id="inprogresstitle">in progress</div>
     <div id="donetitle">done</div>
 
@@ -113,7 +113,11 @@
         Avg cycle time: <span id="cycletime"></span><br>
         Throughput: <span id="throughput"></span>
         <br><br>
-        Batch size: <input type="text" id="maxBatchSize" value="4"><br><br>
+        Team size: <input type="text" id="teamSize" value="1">
+        <br><br>
+        Batch size: <input type="text" id="maxBatchSize" value="4"><br>
+        WIP limit: <input type="text" id="wipLimit" value="3">
+        <br><br>
         Random seed: <input type="text" id="randomSeed" value="fuchsia"><br><br>
         <button id="startButton">Start Simulation</button>
     </div>

@@ -39,8 +39,10 @@ class WorkAssignments {
         return PositiveInteger.fromNumber(this.props.assignments.length);
     }
 
-    batches(): BatchOfWork[] {
-        return this.props.assignments.map(assignment => assignment.batch())
+    assignees(): PositiveInteger[] {
+        return this.props.assignments
+            .map(assignment => assignment.assignees())
+            .reduce((acc, val) => acc.concat(val), []);
     }
 
     units(): UnitOfWork[] {
@@ -51,6 +53,10 @@ class WorkAssignments {
 
     assignments(): WorkAssignment[] {
         return this.props.assignments;
+    }
+    
+    add(assignment: WorkAssignment): WorkAssignments {
+        return new WorkAssignments({assignments: [...this.props.assignments, assignment]})
     }
 
     getDone(): BatchOfWork[] {
