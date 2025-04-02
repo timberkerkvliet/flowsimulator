@@ -14,7 +14,6 @@ function randomLetters(randomSeed: () => number): string {
 class UnitOfWorkFactory {
     constructor(
         private readonly props: {
-            mu: number,
             randomSeed: () => number
         }
     ) {}
