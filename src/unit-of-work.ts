@@ -4,7 +4,8 @@ class UnitOfWork {
     constructor(
         private readonly props: {
             id: string,
-            toGo: PositiveInteger,
+            baseProbability: number,
+            randomSeed: () => number,
             timeStart: PositiveInteger | undefined,
             timeDone: PositiveInteger | undefined
         }
@@ -26,14 +27,15 @@ class UnitOfWork {
             return new UnitOfWork({...this.props, timeStart: time})
         }
 
-        let toGo = this.props.toGo;
-        toGo = toGo.minus(PositiveInteger.fromNumber(1));
-        let timeDone = toGo.isZero() ? time : undefined;
+        let timeDone = undefined;
+
+        if (this.props.randomSeed() <= this.props.baseProbability) {
+            timeDone = time;
+        }
 
         return new UnitOfWork(
             {
                 ...this.props,
-                toGo,
                 timeDone
             }
         )

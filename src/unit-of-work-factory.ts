@@ -36,7 +36,8 @@ class UnitOfWorkFactory {
     public create(): UnitOfWork {
         return new UnitOfWork({
             id: randomLetters(this.props.randomSeed),
-            toGo: PositiveInteger.fromNumber(geometricRealization(this.props.mu, this.props.randomSeed)),
+            baseProbability: 0.25,
+            randomSeed: this.props.randomSeed,
             timeStart: undefined,
             timeDone: undefined
         });

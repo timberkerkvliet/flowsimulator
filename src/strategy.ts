@@ -3,6 +3,11 @@ import { PositiveInteger } from "./positive-integer";
 import { WorkAssignment, WorkAssignments } from "./work-assignment";
 import { Backlog } from "./backlog";
 
+type StrategyExecutionResult = {
+    assignments: WorkAssignments,
+    backlog: Backlog
+}
+
 class Strategy {
     constructor(
         private readonly props: {
@@ -15,21 +20,28 @@ class Strategy {
         current: WorkAssignments,
         backlog: Backlog,
         teamMember: PositiveInteger
-    ): WorkAssignments {
+    ): StrategyExecutionResult {
         if (current.assignees().find(member => member.equals(teamMember))) {
-            return current;
+            return {assignments: current, backlog: backlog};
         }
         if (current.number().geq(this.props.wipLimit)) {
-            return current;
+            return {assignments: current, backlog: backlog};
         }
-        return current.add(
-            new WorkAssignment(
-                {
-                    batch: new BatchOfWork(backlog.topOfBacklog(this.props.batchSize)),
-                    assignees: [teamMember]
-                }
-            )
-        )
+
+        const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
+        const newBacklog = backlog.remove(batch.unitsOfWork);
+
+        return {
+            assignments: current.add(
+                new WorkAssignment(
+                    {
+                        batch,
+                        assignees: [teamMember]
+                    }
+                )
+            ),
+            backlog: newBacklog
+        }
 
     }
 
@@ -37,11 +49,14 @@ class Strategy {
         current: WorkAssignments,
         backlog: Backlog,
         teamSize: PositiveInteger
-    ): WorkAssignments {
+    ): StrategyExecutionResult {
         let member = PositiveInteger.fromNumber(1);
-        let result = current;
+        let result = {
+            assignments: current,
+            backlog
+        }
         while (member.leq(teamSize)) {
-            result = this.optimizeFor(result, backlog, member);
+            result = this.optimizeFor(result.assignments, result.backlog, member);
             member = member.next();
         }
 
