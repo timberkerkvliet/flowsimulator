@@ -1,34 +1,30 @@
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
-import { UnitOfWork } from "./unit-of-work";
+
 
 class WorkAssignment {
-    constructor(
-        private readonly props: {
-            batch: BatchOfWork,
-            assignees: PositiveInteger[]
-        }
-    ) {}
-    
-    batch(): BatchOfWork {
-        return this.props.batch;
-    }
-    assignees(): PositiveInteger[] {
-        return this.props.assignees;
+    public readonly batch: BatchOfWork
+    public readonly assignees: PositiveInteger[]
+
+    constructor(private readonly props: {
+        batch: BatchOfWork,
+        assignees: PositiveInteger[]
+    }) {
+        this.batch = props.batch;
+        this.assignees = props.assignees;
     }
 
     assign(member: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
-            {...this.props,
-                assignees: [...this.props.assignees, member]}
-                )
+            {...this.props, assignees: [...this.assignees, member]}
+        )
     }
 
     start(time: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
             {
                 ...this.props,
-                batch: this.props.batch.start(time)
+                batch: this.batch.start(time)
             }
         )
     }
@@ -37,7 +33,7 @@ class WorkAssignment {
         return new WorkAssignment(
             {
                 ...this.props,
-                batch: this.props.batch.progress(time, this.props.assignees)
+                batch: this.batch.progress(time, this.assignees)
             }
         )
     }
@@ -50,38 +46,32 @@ class WorkAssignments {
             assignments: WorkAssignment[]
         }
     ) {}
+
+    public get assignments(): WorkAssignment[] { return this.props.assignments; }
     
-    number(): PositiveInteger {
-        return PositiveInteger.fromNumber(this.props.assignments.length);
+    public get number(): PositiveInteger {
+        return PositiveInteger.fromNumber(this.assignments.length);
     }
 
-    assignees(): PositiveInteger[] {
-        return this.props.assignments
-            .map(assignment => assignment.assignees())
+    public get assignees(): PositiveInteger[] {
+        return this.assignments
+            .map(assignment => assignment.assignees)
             .reduce((acc, val) => acc.concat(val), []);
     }
 
-    units(): UnitOfWork[] {
-        return this.props.assignments
-        .map(assignment => assignment.batch().unitsOfWork)
-        .reduce((acc, val) => acc.concat(val), [])
-    }
+    
 
-    assignments(): WorkAssignment[] {
-        return this.props.assignments;
-    }
-
-    findAssignmentWithLowOccupation(): WorkAssignment {
-        return this.props.assignments.sort((x, y) => x.assignees.length - y.assignees.length)[0];
+    public findAssignmentWithLowOccupation(): WorkAssignment {
+        return this.assignments.sort((x, y) => x.assignees.length - y.assignees.length)[0];
     }
     
     add(assignment: WorkAssignment): WorkAssignments {
-        return new WorkAssignments({assignments: [...this.props.assignments, assignment]})
+        return new WorkAssignments({assignments: [...this.assignments, assignment]})
     }
 
     assign(member: PositiveInteger, batch: BatchOfWork): WorkAssignments {
-        const index = this.props.assignments.findIndex(assignment => assignment.batch().equals(batch));
-        let assignments = this.props.assignments;
+        const index = this.assignments.findIndex(assignment => assignment.batch.equals(batch));
+        let assignments = this.assignments;
 
         if (index === -1) {
             assignments = [...assignments, new WorkAssignment({batch, assignees: [member]})];
@@ -92,17 +82,17 @@ class WorkAssignments {
         return new WorkAssignments({assignments});
     }
 
-    getDone(): BatchOfWork[] {
-        return this.props.assignments
-            .map(assignment => assignment.batch())
-            .filter(batch => batch.isDone());
+    public get batchesDone(): BatchOfWork[] {
+        return this.assignments
+            .map(assignment => assignment.batch)
+            .filter(batch => batch.isDone);
     }
 
     removeDone(): WorkAssignments {
         return new WorkAssignments(
             {
-                assignments: this.props.assignments
-                    .filter(assignment => !assignment.batch().isDone())
+                assignments: this.assignments
+                    .filter(assignment => !assignment.batch.isDone)
             }
         );
     }
@@ -110,8 +100,8 @@ class WorkAssignments {
     start(time: PositiveInteger): WorkAssignments {
         return new WorkAssignments(
             {
-                assignments: this.props.assignments
-                .map(assignment => assignment.batch().hasStarted() ? assignment : assignment.start(time))
+                assignments: this.assignments
+                .map(assignment => assignment.batch.hasStarted ? assignment : assignment.start(time))
             }
         )
     }
@@ -119,7 +109,7 @@ class WorkAssignments {
     progress(time: PositiveInteger): WorkAssignments {
         return new WorkAssignments(
             {
-                assignments: this.props.assignments.map(assignment => assignment.progress(time))
+                assignments: this.assignments.map(assignment => assignment.progress(time))
             }
         )
     }

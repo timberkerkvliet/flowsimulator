@@ -21,12 +21,12 @@ class Strategy {
         backlog: Backlog,
         teamMember: PositiveInteger
     ): StrategyExecutionResult {
-        if (current.assignees().find(member => member.equals(teamMember))) {
+        if (current.assignees.find(member => member.equals(teamMember))) {
             return {assignments: current, backlog: backlog};
         }
-        if (current.number().geq(this.props.wipLimit)) {
+        if (current.number.geq(this.props.wipLimit)) {
             const result = current.findAssignmentWithLowOccupation();
-            return {assignments: current.assign(teamMember, result.batch()), backlog: backlog};
+            return {assignments: current.assign(teamMember, result.batch), backlog: backlog};
         }
 
         const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));

@@ -28,7 +28,7 @@ class Backlog {
         const time = PositiveInteger.fromNumber(1);
         return new Backlog(
             {
-                unitsOfWork: Array.from({ length: size.getValue() }, () => unitOfWorkFactory.create()),
+                unitsOfWork: Array.from({ length: size.value }, () => unitOfWorkFactory.create()),
                 unitOfWorkFactory,
                 size: size
             }
@@ -39,16 +39,16 @@ class Backlog {
         if (this.props.unitsOfWork.length === 0) {
             return undefined;
         }
-        return this.props.unitsOfWork.slice(0, n.getValue());
+        return this.props.unitsOfWork.slice(0, n.value);
     }
 
     public remove(units: UnitOfWork[]): Backlog {
-        const ids = units.map(unit => unit.id());
+        const ids = units.map(unit => unit.id);
         let unitsOfWork = this.props.unitsOfWork;
         unitsOfWork = unitsOfWork.filter(
-            unit => !ids.includes(unit.id())
+            unit => !ids.includes(unit.id)
         )
-        while (unitsOfWork.length < this.props.size.getValue()) {
+        while (unitsOfWork.length < this.props.size.value) {
             unitsOfWork = [...unitsOfWork, this.props.unitOfWorkFactory.create()]
         }
 

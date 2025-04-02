@@ -1,5 +1,5 @@
 class PositiveInteger {
-    private readonly value: number;
+    public readonly value: number;
 
     constructor(value: number) {
         if (!Number.isInteger(value) || value < 0) {
@@ -17,15 +17,11 @@ class PositiveInteger {
     }
 
     public add(value: PositiveInteger) {
-        return new PositiveInteger(this.value + value.getValue());
+        return new PositiveInteger(this.value + value.value);
     }
 
     public minus(value: PositiveInteger) {
-        return new PositiveInteger(this.value - value.getValue());
-    }
-
-    getValue(): number {
-        return this.value;
+        return new PositiveInteger(this.value - value.value);
     }
 
     equals(other: PositiveInteger): boolean {

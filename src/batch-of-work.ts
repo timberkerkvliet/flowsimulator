@@ -22,40 +22,40 @@ class BatchOfWork {
         );
     }
 
-    public id(): string {
-        return this.unitsOfWork.map(unit => unit.id()).join("-");
+    public get id(): string {
+        return this.unitsOfWork.map(unit => unit.id).join("-");
     }
 
-    public timeDone(): PositiveInteger {
+    public get timeDone(): PositiveInteger {
         return PositiveInteger.fromNumber(
-            max(this.unitsOfWork.map(unit => unit.timeDone().getValue()))
+            max(this.unitsOfWork.map(unit => unit.timeDone.value))
         );
     }
 
-    public timeStart(): PositiveInteger {
+    public get timeStart(): PositiveInteger {
         return PositiveInteger.fromNumber(
-            min(this.unitsOfWork.map(unit => unit.timeStart().getValue()))
+            min(this.unitsOfWork.map(unit => unit.timeStart.value))
         );
     }
 
-    public isDone(): boolean {
+    public get isDone(): boolean {
         return this.unitsOfWork.map(unit => unit.isDone()).every(x => x);
     }
 
-    public hasStarted(): boolean {
+    public get hasStarted(): boolean {
         return this.unitsOfWork.map(unit => unit.hasStarted()).every(x => x);
     }
 
-    public timeInProgress(): PositiveInteger {
-        return this.timeDone().minus(this.timeStart());
+    public get timeInProgress(): PositiveInteger {
+        return this.timeDone.minus(this.timeStart);
     }
 
-    public size(): PositiveInteger {
+    public get size(): PositiveInteger {
         return PositiveInteger.fromNumber(this.unitsOfWork.length);
     }
 
     public equals(batch: BatchOfWork): boolean {
-        return this.id() === batch.id();
+        return this.id === batch.id;
     }
 
 }

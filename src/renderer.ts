@@ -28,7 +28,7 @@ class Renderer {
         let html = "";
         workOnBacklog.everything().forEach(
             (unit) => {
-                html += unit.id().charAt(0)
+                html += unit.id.charAt(0)
                 html += " ";
             }
         )
@@ -37,19 +37,19 @@ class Renderer {
 
     private renderProgress(team: Team) {
         let html = "<table>";
-        team.workInProgress().assignments().forEach(
+        team.workInProgress().assignments.forEach(
             (assignment) => {
                 html += "<tr><td>"
-                assignment.batch().unitsOfWork.forEach(
+                assignment.batch.unitsOfWork.forEach(
                     (unit) => {
-                        html += unit.id().charAt(0);
+                        html += unit.id.charAt(0);
                         html += " ";
                     }
                 )
                 html += "<td>"
-                assignment.assignees().forEach(
+                assignment.assignees.forEach(
                     (assignee) => {
-                        html += assignee.getValue()
+                        html += assignee.value
                         html += " "
                     }
                 )
@@ -64,7 +64,7 @@ class Renderer {
         let html = "";
         workDone.everything().forEach(
             (unit) => {
-                html += unit.id().charAt(0)
+                html += unit.id.charAt(0)
                 html += " ";
             }
         )

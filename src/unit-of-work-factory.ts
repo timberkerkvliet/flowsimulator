@@ -1,18 +1,4 @@
-import { PositiveInteger } from "./positive-integer";
 import { UnitOfWork } from "./unit-of-work";
-
-function geometricRealization(p: number, randomSeed: () => number): number {
-    if (p <= 0 || p > 1) {
-        throw new Error("Probability p must be in the range (0, 1].");
-    }
-    
-    let count = 1;
-    while (randomSeed() >= p) {
-        count++;
-    }
-    
-    return count;
-}
 
 function randomLetters(randomSeed: () => number): string {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

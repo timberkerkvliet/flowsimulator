@@ -35,12 +35,12 @@ class WorkDone {
             return 0;
         }
         return average(this.props.work.map(
-            batch => batch.timeInProgress().getValue()
+            batch => batch.timeInProgress.value
         ));
     }
 
     public throughPut(): number {
-        return sum(this.props.work.map(batch => batch.size().getValue()))/this.props.time.getValue();
+        return sum(this.props.work.map(batch => batch.size.value))/this.props.time.value;
     }
 
 }

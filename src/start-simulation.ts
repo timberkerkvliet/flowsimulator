@@ -28,7 +28,6 @@ if (button) {
 
         const batchOfWorkFactory = new UnitOfWorkFactory(
             {
-                mu: 0.25,
                 randomSeed: seedrandom(randomSeed.value)
             }
         );
