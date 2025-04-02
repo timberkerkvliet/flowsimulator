@@ -4,7 +4,6 @@ import { PositiveInteger } from "./positive-integer"
 class UnitOfWork {
     public readonly id: string
     public readonly timeStart: PositiveInteger | undefined
-    public readonly timeDone: PositiveInteger | undefined
 
     private readonly baseProbability: number
     private readonly randomSeed: () => number
@@ -20,11 +19,17 @@ class UnitOfWork {
         this.baseProbability = props.baseProbability;
         this.randomSeed = props.randomSeed;
         this.timeStart = props.timeStart;
-        this.timeDone = props.timeDone;
+    }
+
+    public get timeDone(): PositiveInteger {
+        if (this.props.timeDone === undefined) {
+            throw new Error();
+        }
+        return this.props.timeDone;
     }
 
     public get timeInProgress(): PositiveInteger {
-        return this.timeDone.minus(this.props.timeStart);
+        return this.timeDone.minus(this.timeStart);
     }
 
     public start(time: PositiveInteger): UnitOfWork {
@@ -45,12 +50,7 @@ class UnitOfWork {
             timeDone = time;
         }
 
-        return new UnitOfWork(
-            {
-                ...this.props,
-                timeDone
-            }
-        )
+        return new UnitOfWork({...this.props, timeDone})
     }
 
     public hasStarted(): boolean {
@@ -58,7 +58,7 @@ class UnitOfWork {
     }
 
     public isDone(): boolean {
-        return this.timeDone !== undefined;
+        return this.props.timeDone !== undefined;
     }
 
 }
