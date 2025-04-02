@@ -17,11 +17,20 @@ class WorkAssignment {
         return this.props.assignees;
     }
 
-    assign(member: PositiveInteger, time: PositiveInteger): WorkAssignment {
+    assign(member: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
-            {batch: this.props.batch.start(time),
+            {...this.props,
                 assignees: [...this.props.assignees, member]}
                 )
+    }
+
+    start(time: PositiveInteger): WorkAssignment {
+        return new WorkAssignment(
+            {
+                ...this.props,
+                batch: this.props.batch.start(time)
+            }
+        )
     }
 
     progress(time: PositiveInteger): WorkAssignment {
@@ -70,16 +79,16 @@ class WorkAssignments {
         return new WorkAssignments({assignments: [...this.props.assignments, assignment]})
     }
 
-    assign(member: PositiveInteger, batch: BatchOfWork, time: PositiveInteger): WorkAssignments {
+    assign(member: PositiveInteger, batch: BatchOfWork): WorkAssignments {
         const index = this.props.assignments.findIndex(assignment => assignment.batch().equals(batch));
         let assignments = this.props.assignments;
 
         if (index === -1) {
-            assignments = [...assignments, new WorkAssignment({batch: batch.start(time), assignees: [member]})];
+            assignments = [...assignments, new WorkAssignment({batch, assignees: [member]})];
             return new WorkAssignments({assignments});
         }
 
-        assignments[index] = assignments[index].assign(member, time)
+        assignments[index] = assignments[index].assign(member)
         return new WorkAssignments({assignments});
     }
 
@@ -96,6 +105,15 @@ class WorkAssignments {
                     .filter(assignment => !assignment.batch().isDone())
             }
         );
+    }
+
+    start(time: PositiveInteger): WorkAssignments {
+        return new WorkAssignments(
+            {
+                assignments: this.props.assignments
+                .map(assignment => assignment.batch().hasStarted() ? assignment : assignment.start(time))
+            }
+        )
     }
 
     progress(time: PositiveInteger): WorkAssignments {

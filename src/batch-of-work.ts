@@ -42,6 +42,10 @@ class BatchOfWork {
         return this.unitsOfWork.map(unit => unit.isDone()).every(x => x);
     }
 
+    public hasStarted(): boolean {
+        return this.unitsOfWork.map(unit => unit.hasStarted()).every(x => x);
+    }
+
     public timeInProgress(): PositiveInteger {
         return this.timeDone().minus(this.timeStart());
     }

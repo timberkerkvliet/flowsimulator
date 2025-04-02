@@ -19,22 +19,21 @@ class Strategy {
     private optimizeFor(
         current: WorkAssignments,
         backlog: Backlog,
-        teamMember: PositiveInteger,
-        time: PositiveInteger
+        teamMember: PositiveInteger
     ): StrategyExecutionResult {
         if (current.assignees().find(member => member.equals(teamMember))) {
             return {assignments: current, backlog: backlog};
         }
         if (current.number().geq(this.props.wipLimit)) {
             const result = current.findAssignmentWithLowOccupation();
-            return {assignments: current.assign(teamMember, result.batch(), time), backlog: backlog};
+            return {assignments: current.assign(teamMember, result.batch()), backlog: backlog};
         }
 
         const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
         const newBacklog = backlog.remove(batch.unitsOfWork);
 
         return {
-            assignments: current.assign(teamMember, batch, time),
+            assignments: current.assign(teamMember, batch),
             backlog: newBacklog
         }
 
@@ -43,8 +42,7 @@ class Strategy {
     execute(
         current: WorkAssignments,
         backlog: Backlog,
-        teamSize: PositiveInteger,
-        time: PositiveInteger
+        teamSize: PositiveInteger
     ): StrategyExecutionResult {
         let member = PositiveInteger.fromNumber(1);
         let result = {
@@ -52,7 +50,7 @@ class Strategy {
             backlog
         }
         while (member.leq(teamSize)) {
-            result = this.optimizeFor(result.assignments, result.backlog, member, time);
+            result = this.optimizeFor(result.assignments, result.backlog, member);
             member = member.next();
         }
 

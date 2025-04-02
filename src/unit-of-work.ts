@@ -20,6 +20,9 @@ class UnitOfWork {
     }
 
     public start(time: PositiveInteger): UnitOfWork {
+        if (this.hasStarted()) {
+            return this;
+        }
         return new UnitOfWork({...this.props, timeStart: time})
     }
 
@@ -40,6 +43,10 @@ class UnitOfWork {
                 timeDone
             }
         )
+    }
+
+    public hasStarted(): boolean {
+        return this.props.timeStart !== undefined;
     }
 
     public isDone(): boolean {
