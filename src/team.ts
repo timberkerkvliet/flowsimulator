@@ -60,7 +60,7 @@ class Team {
         let workingOn = this.props.workingOn;
         let backlog = this.props.backlog;
 
-        workingOn = workingOn.progress(time);
+        workingOn = workingOn.progress(time, this.props.teamSize);
         done = done.add(workingOn.batchesDone);
         workingOn = workingOn.removeDone();
         ({ assignments: workingOn, backlog }  = this.props.strategy.execute(workingOn, backlog, this.props.teamSize));

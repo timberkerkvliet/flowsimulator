@@ -25,6 +25,8 @@ class SimulationState {
 if (button) {
     button.addEventListener('click', async () => {
         button.textContent = "Update";
+        teamSizeElement.disabled = true;
+        randomSeed.disabled = true;
 
         const batchOfWorkFactory = new UnitOfWorkFactory(
             {
@@ -43,7 +45,7 @@ if (button) {
         
         if (SimulationState.runner === undefined) {
             const team = Team.new(
-                Backlog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30)),
+                Backlog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30), teamSize),
                 strategy,
                 teamSize
             )

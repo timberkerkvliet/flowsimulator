@@ -1,4 +1,5 @@
-import { UnitOfWork } from "./unit-of-work";
+import { PositiveInteger } from "./positive-integer";
+import { randomTeamMember, UnitOfWork } from "./unit-of-work";
 
 function randomLetters(randomSeed: () => number): string {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -18,11 +19,12 @@ class UnitOfWorkFactory {
         }
     ) {}
     
-    public create(): UnitOfWork {
+    public create(teamSize: PositiveInteger): UnitOfWork {
         return new UnitOfWork({
             id: randomLetters(this.props.randomSeed),
             baseProbability: 0.25,
             randomSeed: this.props.randomSeed,
+            needsMember: randomTeamMember(teamSize, this.props.randomSeed),
             timeStart: undefined,
             timeDone: undefined
         });

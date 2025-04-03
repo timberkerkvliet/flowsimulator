@@ -11,15 +11,19 @@ class BatchOfWork {
         );
     }
 
-    progress(time: PositiveInteger, assigness: PositiveInteger[]): BatchOfWork {
+    progress(time: PositiveInteger, assigness: PositiveInteger[], teamSize: PositiveInteger): BatchOfWork {
         const unitsOfWork = this.unitsOfWork;
-        const notDoneIndex = unitsOfWork.findIndex(unit => !unit.isDone())
+        const notDoneIndex = unitsOfWork.findIndex(unit => unit.canBeProgressedBy(assigness))
 
         return new BatchOfWork(
             unitsOfWork.map((unit, index) => 
-                index === notDoneIndex ? unit.progress(time, assigness): unit
+                index === notDoneIndex ? unit.progress(time, assigness, teamSize): unit
             )
         );
+    }
+
+    public canBeProgressedBy(assignees: PositiveInteger[]): boolean {
+        return this.unitsOfWork.filter(unit => unit.canBeProgressedBy(assignees)).length > 0;
     }
 
     public get id(): string {

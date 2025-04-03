@@ -24,11 +24,11 @@ class Backlog {
         )
     }
 
-    public static newBacklog(unitOfWorkFactory: UnitOfWorkFactory, size: PositiveInteger): Backlog {
+    public static newBacklog(unitOfWorkFactory: UnitOfWorkFactory, size: PositiveInteger, teamSize: PositiveInteger): Backlog {
         const time = PositiveInteger.fromNumber(1);
         return new Backlog(
             {
-                unitsOfWork: Array.from({ length: size.value }, () => unitOfWorkFactory.create()),
+                unitsOfWork: Array.from({ length: size.value }, () => unitOfWorkFactory.create(teamSize)),
                 unitOfWorkFactory,
                 size: size
             }
@@ -42,14 +42,14 @@ class Backlog {
         return this.props.unitsOfWork.slice(0, n.value);
     }
 
-    public remove(units: UnitOfWork[]): Backlog {
+    public remove(units: UnitOfWork[], teamSize: PositiveInteger): Backlog {
         const ids = units.map(unit => unit.id);
         let unitsOfWork = this.props.unitsOfWork;
         unitsOfWork = unitsOfWork.filter(
             unit => !ids.includes(unit.id)
         )
         while (unitsOfWork.length < this.props.size.value) {
-            unitsOfWork = [...unitsOfWork, this.props.unitOfWorkFactory.create()]
+            unitsOfWork = [...unitsOfWork, this.props.unitOfWorkFactory.create(teamSize)]
         }
 
         return new Backlog(

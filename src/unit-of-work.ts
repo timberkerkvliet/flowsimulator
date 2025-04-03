@@ -1,9 +1,13 @@
 import { PositiveInteger } from "./positive-integer"
 
+function randomTeamMember(teamSize: PositiveInteger, randomSeed: () => number): PositiveInteger {
+    return PositiveInteger.fromNumber(Math.floor(randomSeed() * teamSize.value) + 1);
+}
 
 class UnitOfWork {
     public readonly id: string
     public readonly timeStart: PositiveInteger | undefined
+    public readonly needsMember: PositiveInteger | undefined
 
     private readonly baseProbability: number
     private readonly randomSeed: () => number
@@ -12,6 +16,7 @@ class UnitOfWork {
         id: string,
         baseProbability: number,
         randomSeed: () => number,
+        needsMember: PositiveInteger | undefined,
         timeStart: PositiveInteger | undefined,
         timeDone: PositiveInteger | undefined
     }) {
@@ -19,6 +24,7 @@ class UnitOfWork {
         this.baseProbability = props.baseProbability;
         this.randomSeed = props.randomSeed;
         this.timeStart = props.timeStart;
+        this.needsMember = props.needsMember;
     }
 
     public get timeDone(): PositiveInteger {
@@ -36,13 +42,30 @@ class UnitOfWork {
         if (this.hasStarted()) {
             return this;
         }
+
         return new UnitOfWork({...this.props, timeStart: time})
     }
 
-    public progress(time: PositiveInteger, assignees: PositiveInteger[]): UnitOfWork {
+    public canBeProgressedBy(assignees: PositiveInteger[]): boolean {
         if (assignees.length === 0 || this.isDone()) {
+            return false;
+        }
+
+        let needsMember = this.needsMember;
+
+        return needsMember === undefined || assignees.filter(assignee => assignee.equals(needsMember)).length > 0;
+    }
+
+    public progress(
+        time: PositiveInteger,
+        assignees: PositiveInteger[],
+        teamSize: PositiveInteger
+    ): UnitOfWork {
+        if (!this.canBeProgressedBy(assignees)) {
             return this;
         }
+        
+        const needsMember = randomTeamMember(teamSize, this.randomSeed);
 
         let timeDone = undefined;
 
@@ -50,7 +73,7 @@ class UnitOfWork {
             timeDone = time;
         }
 
-        return new UnitOfWork({...this.props, timeDone})
+        return new UnitOfWork({...this.props, needsMember, timeDone})
     }
 
     public hasStarted(): boolean {
@@ -63,5 +86,5 @@ class UnitOfWork {
 
 }
 
-export { UnitOfWork }
+export { UnitOfWork, randomTeamMember }
 

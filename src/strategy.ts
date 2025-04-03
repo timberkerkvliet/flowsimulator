@@ -19,23 +19,31 @@ class Strategy {
     private optimizeFor(
         current: WorkAssignments,
         backlog: Backlog,
-        teamMember: PositiveInteger
+        teamMember: PositiveInteger,
+        teamSize: PositiveInteger
     ): StrategyExecutionResult {
-        if (current.assignees.find(member => member.equals(teamMember))) {
-            return {assignments: current, backlog: backlog};
+        let result = current.findAssignmentThatNeedsMe(teamMember);
+        if (result !== undefined) {
+            return {assignments: current.assign(teamMember, result.batch), backlog: backlog};
         }
+
         if (current.number.geq(this.props.wipLimit)) {
-            const result = current.findAssignmentWithLowOccupation();
+            result = current.findAssignmentWithLowOccupation();
+            
             return {assignments: current.assign(teamMember, result.batch), backlog: backlog};
         }
 
         const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
-        const newBacklog = backlog.remove(batch.unitsOfWork);
+        const newBacklog = backlog.remove(batch.unitsOfWork, teamSize);
 
-        return {
-            assignments: current.assign(teamMember, batch),
-            backlog: newBacklog
+        if (batch.canBeProgressedBy([teamMember])) {
+            return {
+                assignments: current.assign(teamMember, batch),
+                backlog: newBacklog
+            }
         }
+
+        return {assignments: current, backlog: backlog};
 
     }
 
@@ -50,7 +58,11 @@ class Strategy {
             backlog
         }
         while (member.leq(teamSize)) {
-            result = this.optimizeFor(result.assignments, result.backlog, member);
+            result = this.optimizeFor(result.assignments, result.backlog, member, teamSize);
+            member = member.next();
+        }
+        while (member.leq(teamSize)) {
+            result = this.optimizeFor(result.assignments, result.backlog, member, teamSize);
             member = member.next();
         }
 

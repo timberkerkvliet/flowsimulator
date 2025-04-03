@@ -14,9 +14,25 @@ class WorkAssignment {
         this.assignees = props.assignees;
     }
 
+    public canBeUnblockedBy(teamMember: PositiveInteger) {
+        if (this.batch.canBeProgressedBy(this.assignees)) {
+            return false;
+        }
+
+        const updatedAssigneeValues = [...this.assignees, teamMember];
+
+        return this.batch.canBeProgressedBy(updatedAssigneeValues)
+    }
+
     assign(member: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
             {...this.props, assignees: [...this.assignees, member]}
+        )
+    }
+
+    unassign(member: PositiveInteger): WorkAssignment {
+        return new WorkAssignment(
+            {...this.props, assignees: this.assignees.filter(assignee => !assignee.equals(member))}
         )
     }
 
@@ -29,11 +45,11 @@ class WorkAssignment {
         )
     }
 
-    progress(time: PositiveInteger): WorkAssignment {
+    progress(time: PositiveInteger, teamSize: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
             {
                 ...this.props,
-                batch: this.batch.progress(time, this.assignees)
+                batch: this.batch.progress(time, this.assignees, teamSize)
             }
         )
     }
@@ -59,7 +75,16 @@ class WorkAssignments {
             .reduce((acc, val) => acc.concat(val), []);
     }
 
-    
+    public findAssignmentThatNeedsMe(teamMember: PositiveInteger): WorkAssignment | undefined {
+        const found = this.assignments
+            .filter(
+                assignment => assignment.canBeUnblockedBy(teamMember)
+            );
+        if (found.length === 0) {
+            return undefined;
+        }
+        return found[0];
+    }
 
     public findAssignmentWithLowOccupation(): WorkAssignment {
         return this.assignments.sort((x, y) => x.assignees.length - y.assignees.length)[0];
@@ -70,15 +95,17 @@ class WorkAssignments {
     }
 
     assign(member: PositiveInteger, batch: BatchOfWork): WorkAssignments {
-        const index = this.assignments.findIndex(assignment => assignment.batch.equals(batch));
+        const batchIndex = this.assignments.findIndex(assignment => assignment.batch.equals(batch));
         let assignments = this.assignments;
 
-        if (index === -1) {
-            assignments = [...assignments, new WorkAssignment({batch, assignees: [member]})];
-            return new WorkAssignments({assignments});
-        }
+        assignments = assignments.map(assignment => assignment.unassign(member));
 
-        assignments[index] = assignments[index].assign(member)
+        if (batchIndex === -1) {
+            assignments = [...assignments, new WorkAssignment({batch, assignees: [member]})];
+        } else {
+            assignments[batchIndex] = assignments[batchIndex].assign(member)
+        }
+        
         return new WorkAssignments({assignments});
     }
 
@@ -106,10 +133,10 @@ class WorkAssignments {
         )
     }
 
-    progress(time: PositiveInteger): WorkAssignments {
+    progress(time: PositiveInteger, teamSize: PositiveInteger): WorkAssignments {
         return new WorkAssignments(
             {
-                assignments: this.assignments.map(assignment => assignment.progress(time))
+                assignments: this.assignments.map(assignment => assignment.progress(time, teamSize))
             }
         )
     }
