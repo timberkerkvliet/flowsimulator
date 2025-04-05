@@ -11,11 +11,13 @@ import { Strategy } from "./strategy";
 const button = document.getElementById('startButton');
 
 const teamSizeElement = document.getElementById('teamSize') as HTMLInputElement;
+const randomSeed = document.getElementById('randomSeed') as HTMLInputElement;
+
+const togetherFactor = document.getElementById('togetherFactor') as HTMLInputElement;
 
 const maxBatchSize = document.getElementById('maxBatchSize') as HTMLInputElement;
 const wipLimit = document.getElementById('wipLimit') as HTMLInputElement;
 
-const randomSeed = document.getElementById('randomSeed') as HTMLInputElement;
 
 
 class SimulationState {
@@ -30,7 +32,8 @@ if (button) {
 
         const batchOfWorkFactory = new UnitOfWorkFactory(
             {
-                randomSeed: seedrandom(randomSeed.value)
+                randomSeed: seedrandom(randomSeed.value),
+                togetherFactor: parseFloat(togetherFactor.value)
             }
         );
 

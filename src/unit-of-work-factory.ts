@@ -15,7 +15,8 @@ function randomLetters(randomSeed: () => number): string {
 class UnitOfWorkFactory {
     constructor(
         private readonly props: {
-            randomSeed: () => number
+            randomSeed: () => number,
+            togetherFactor: number
         }
     ) {}
     
@@ -23,6 +24,7 @@ class UnitOfWorkFactory {
         return new UnitOfWork({
             id: randomLetters(this.props.randomSeed),
             baseProbability: 0.25,
+            togetherFactor: this.props.togetherFactor,
             randomSeed: this.props.randomSeed,
             needsMember: randomTeamMember(teamSize, this.props.randomSeed),
             timeStart: undefined,

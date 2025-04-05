@@ -15,6 +15,7 @@ class UnitOfWork {
     constructor(private readonly props: {
         id: string,
         baseProbability: number,
+        togetherFactor: number,
         randomSeed: () => number,
         needsMember: PositiveInteger | undefined,
         timeStart: PositiveInteger | undefined,
@@ -69,7 +70,13 @@ class UnitOfWork {
 
         let timeDone = undefined;
 
-        if (this.randomSeed() <= this.baseProbability * assignees.length) {
+        let s = 0;
+
+        for (let k = 0; k < assignees.length; k++) {
+            s += this.baseProbability * this.props.togetherFactor**k
+        }
+
+        if (this.randomSeed() <= s) {
             timeDone = time;
         }
 
