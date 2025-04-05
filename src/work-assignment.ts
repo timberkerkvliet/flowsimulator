@@ -1,6 +1,6 @@
-import { min } from "simple-statistics";
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
+import { UnitOfWork } from "./unit-of-work";
 
 
 class WorkAssignment {
@@ -19,7 +19,7 @@ class WorkAssignment {
         return this.assignees.filter(assignee => assignee.equals(teamMember)).length > 0;
     }
 
-    public canDoWithout(teamMember: PositiveInteger) {
+    public canBeProgressedWithout(teamMember: PositiveInteger) {
         if (!this.isAssigned(teamMember)) {
             return true;
         }
@@ -33,22 +33,10 @@ class WorkAssignment {
         return this.batch.canBeProgressedBy(without);
     }
 
-    public canBeProgressed(): boolean {
-        return this.batch.canBeProgressedBy(this.assignees);
-    }
-
     public canBeProgressedWith(member: PositiveInteger): boolean {
         const updatedAssigneeValues = [...this.assignees, member];
 
         return this.batch.canBeProgressedBy(updatedAssigneeValues);
-    }
-
-    public canBeUnblockedBy(teamMember: PositiveInteger) {
-        if (this.canBeProgressed()) {
-            return false;
-        }
-
-        return this.canBeProgressedWith(teamMember);
     }
 
     assign(member: PositiveInteger): WorkAssignment {
@@ -81,18 +69,6 @@ class WorkAssignment {
         )
     }
 
-    equals(assignment: WorkAssignment): boolean {
-        if (!this.batch.equals(assignment.batch)) {
-            return false;
-        }
-        if (this.assignees.length !== assignment.assignees.length) {
-            return false;
-        }
-        const values = assignment.assignees.map(assignee => assignee.value);
-        
-        return this.assignees.every(assignee => values.includes(assignee.value));
-    }
-
 }
 
 class WorkAssignments {
@@ -108,6 +84,12 @@ class WorkAssignments {
         return PositiveInteger.fromNumber(this.assignments.length);
     }
 
+    public get unitsOfWork(): UnitOfWork[] {
+        return this.assignments
+            .map(assignment => assignment.batch.unitsOfWork)
+            .reduce((acc, val) => acc.concat(val), []);
+    }
+
     public isAssigned(teamMember: PositiveInteger): boolean {
         return this.assignments.filter(assignment => assignment.isAssigned(teamMember)).length > 0;
     }
@@ -118,37 +100,12 @@ class WorkAssignments {
             .reduce((acc, val) => acc.concat(val), []);
     }
 
-    public assignedToWorkThatCanDoWithout(teamMember: PositiveInteger): boolean {
-        return this.assignments.filter(
-            assignment => assignment.isAssigned(teamMember)
-        ).every(
-            assignment => assignment.canDoWithout(teamMember)
+    public assignedToWorkThatCanBeProgressedWithout(teamMember: PositiveInteger): boolean {
+        return this.assignments.every(
+            assignment => assignment.canBeProgressedWithout(teamMember)
         );
     }
 
-    public findAssignmentThatNeedsMe(teamMember: PositiveInteger): WorkAssignment | undefined {
-        const found = this.assignments
-            .filter(
-                assignment => assignment.canBeUnblockedBy(teamMember)
-            );
-        if (found.length === 0) {
-            return undefined;
-        }
-        return found[0];
-    }
-
-    public findAssignmentFor(teamMember: PositiveInteger): WorkAssignment | undefined {
-        let candidates = this.assignments
-            .filter(assignment => assignment.canBeProgressedWith(teamMember))
-
-        if (candidates.length === 0) {
-            return undefined;
-        }
-
-        const minOccupation = min(candidates.map(assignment => assignment.assignees.length))
-        return candidates.find(assignment => assignment.assignees.length === minOccupation);
-    }
-    
     add(assignment: WorkAssignment): WorkAssignments {
         return new WorkAssignments({assignments: [...this.assignments, assignment]})
     }
@@ -166,6 +123,11 @@ class WorkAssignments {
         }
         
         return new WorkAssignments({assignments});
+    }
+
+    unassign(member: PositiveInteger): WorkAssignments {
+        return new WorkAssignments(
+            {assignments: this.assignments.map(assignment => assignment.unassign(member))});
     }
 
     public get batchesDone(): BatchOfWork[] {
@@ -189,15 +151,6 @@ class WorkAssignments {
                 assignments: this.assignments
                 .map(assignment => assignment.batch.hasStarted ? assignment : assignment.start(time))
             }
-        )
-    }
-
-    equals(assignments: WorkAssignments): boolean {
-        if (!this.number.equals(assignments.number)) {
-            return false;
-        }
-        return this.assignments.every(
-            (assignment, index) => assignment.equals(assignments.assignments[index])
         )
     }
 

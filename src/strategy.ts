@@ -2,6 +2,7 @@ import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
 import { WorkAssignment, WorkAssignments } from "./work-assignment";
 import { Backlog } from "./backlog";
+import { min } from "simple-statistics";
 
 type StrategyExecutionResult = {
     assignments: WorkAssignments,
@@ -23,33 +24,34 @@ class Strategy {
         teamMember: PositiveInteger,
         teamSize: PositiveInteger
     ): StrategyExecutionResult {
-        if (!current.assignedToWorkThatCanDoWithout(teamMember)) {
+        if (!current.assignedToWorkThatCanBeProgressedWithout(teamMember)) {
             return {assignments: current, backlog: backlog, success: true};
         }
 
-        let result = current.findAssignmentThatNeedsMe(teamMember);
-        if (result !== undefined) {
-            return {assignments: current.assign(teamMember, result.batch), backlog: backlog, success: true};
+        let result = current.unassign(teamMember);
+
+        let candidates = result.assignments;
+
+        if (result.number.lessThan(this.props.wipLimit)) {
+            const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
+            candidates = [new WorkAssignment({batch, assignees:[]}), ...candidates]
         }
 
-        const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
+        candidates = candidates
+            .filter(assignment => assignment.canBeProgressedWith(teamMember))
+            .sort((x, y) => x.assignees.length - y.assignees.length);
 
-        if (batch.canBeProgressedBy([teamMember]) && current.number.lessThan(this.props.wipLimit)) {
-            return {
-                assignments: current.assign(teamMember, batch),
-                backlog: backlog.remove(batch.unitsOfWork, teamSize),
-                success: true
-            }
+        if (candidates.length === 0) {
+            return {assignments: result, backlog: backlog, success: false};
         }
 
-        result = current.findAssignmentFor(teamMember);
-        
-        if (result === undefined) {
-            return {assignments: current, backlog: backlog, success: false};
-        }
-        
-        return {assignments: current.assign(teamMember, result.batch), backlog: backlog, success: true};
+        result = result.assign(teamMember, candidates[0].batch);
 
+        return {
+            assignments: result,
+            backlog: backlog.remove(result.unitsOfWork, teamSize),
+            success: true
+        };
     }
 
     private iteration(

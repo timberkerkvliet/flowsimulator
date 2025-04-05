@@ -40,7 +40,7 @@ class WorkDone {
     }
 
     public throughPut(): number {
-        return sum(this.props.work.map(batch => batch.size.value))/this.props.time.value;
+        return sum(this.props.work.map(batch => batch.size.value))/this.props.time.value * 4;
     }
 
 }
