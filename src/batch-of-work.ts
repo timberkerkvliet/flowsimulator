@@ -15,6 +15,10 @@ class BatchOfWork {
         const unitsOfWork = this.unitsOfWork;
         const notDoneIndex = unitsOfWork.findIndex(unit => unit.canBeProgressedBy(assigness))
 
+        if (assigness.length > 0 && notDoneIndex === -1) {
+            console.log("No progress")
+        }
+
         return new BatchOfWork(
             unitsOfWork.map((unit, index) => 
                 index === notDoneIndex ? unit.progress(time, assigness, teamSize): unit

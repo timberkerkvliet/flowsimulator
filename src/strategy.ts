@@ -5,7 +5,8 @@ import { Backlog } from "./backlog";
 
 type StrategyExecutionResult = {
     assignments: WorkAssignments,
-    backlog: Backlog
+    backlog: Backlog,
+    success: boolean
 }
 
 class Strategy {
@@ -22,29 +23,55 @@ class Strategy {
         teamMember: PositiveInteger,
         teamSize: PositiveInteger
     ): StrategyExecutionResult {
-        let result = current.findAssignmentThatNeedsMe(teamMember);
-        if (result !== undefined) {
-            return {assignments: current.assign(teamMember, result.batch), backlog: backlog};
+        if (!current.assignedToWorkThatCanDoWithout(teamMember)) {
+            return {assignments: current, backlog: backlog, success: true};
         }
 
-        if (current.number.geq(this.props.wipLimit)) {
-            result = current.findAssignmentWithLowOccupation();
-            
-            return {assignments: current.assign(teamMember, result.batch), backlog: backlog};
+        let result = current.findAssignmentThatNeedsMe(teamMember);
+        if (result !== undefined) {
+            return {assignments: current.assign(teamMember, result.batch), backlog: backlog, success: true};
         }
 
         const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
-        const newBacklog = backlog.remove(batch.unitsOfWork, teamSize);
 
-        if (batch.canBeProgressedBy([teamMember])) {
+        if (batch.canBeProgressedBy([teamMember]) && current.number.lessThan(this.props.wipLimit)) {
             return {
                 assignments: current.assign(teamMember, batch),
-                backlog: newBacklog
+                backlog: backlog.remove(batch.unitsOfWork, teamSize),
+                success: true
             }
         }
 
-        return {assignments: current, backlog: backlog};
+        result = current.findAssignmentFor(teamMember);
+        
+        if (result === undefined) {
+            return {assignments: current, backlog: backlog, success: false};
+        }
+        
+        return {assignments: current.assign(teamMember, result.batch), backlog: backlog, success: true};
 
+    }
+
+    private iteration(
+        current: WorkAssignments,
+        backlog: Backlog,
+        teamSize: PositiveInteger
+    ): StrategyExecutionResult {
+        let result = {
+            assignments: current,
+            backlog,
+            success: false
+        }
+        let member = PositiveInteger.fromNumber(1);
+        let success = true;
+        while (member.leq(teamSize)) {
+            result = this.optimizeFor(result.assignments, result.backlog, member, teamSize);
+            if (!result.success) {
+                success = false; 
+            }
+            member = member.next();
+        }
+        return {assignments: result.assignments, backlog: result.backlog, success};
     }
 
     execute(
@@ -52,21 +79,17 @@ class Strategy {
         backlog: Backlog,
         teamSize: PositiveInteger
     ): StrategyExecutionResult {
-        let member = PositiveInteger.fromNumber(1);
         let result = {
             assignments: current,
-            backlog
-        }
-        while (member.leq(teamSize)) {
-            result = this.optimizeFor(result.assignments, result.backlog, member, teamSize);
-            member = member.next();
-        }
-        while (member.leq(teamSize)) {
-            result = this.optimizeFor(result.assignments, result.backlog, member, teamSize);
-            member = member.next();
+            backlog,
+            success: false
         }
 
-        return result;
+        while (!result.success) {
+            result = this.iteration(result.assignments, result.backlog, teamSize);
+        }
+
+       return result;
     }
 }
 
