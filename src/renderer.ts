@@ -38,7 +38,7 @@ class Renderer {
     private renderProgress(team: Team) {
         let html = "<table>";
         team.workInProgress().assignments.forEach(
-            (assignment) => {
+            assignment => {
                 html += "<tr><td>"
                 assignment.batch.unitsOfWork.forEach(
                     (unit) => {
@@ -53,7 +53,6 @@ class Renderer {
                         html += " "
                     }
                 )
-                html += "</tr>"
             }
         )
         html += "</tr>"

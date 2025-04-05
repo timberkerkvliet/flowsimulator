@@ -30,14 +30,25 @@ class Strategy {
 
         let result = current.unassign(teamMember);
 
-        let candidates = result.assignments;
+        let primaryCandidates = result.assignments.filter(assignment => assignment.assignees.length === 0);
 
         if (result.number.lessThan(this.props.wipLimit)) {
             const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
-            candidates = [new WorkAssignment({batch, assignees:[]}), ...candidates]
+            primaryCandidates = [...primaryCandidates, new WorkAssignment({batch, assignees:[]})]
         }
 
-        candidates = candidates
+        primaryCandidates = primaryCandidates.filter(assignment => assignment.canBeProgressedWith(teamMember));
+
+        if (primaryCandidates.length > 0) {
+            result = result.assign(teamMember, primaryCandidates[0].batch);
+            return {
+                assignments: result,
+                backlog: backlog.remove(result.unitsOfWork, teamSize),
+                success: true
+            };
+        }
+
+        let candidates = result.assignments
             .filter(assignment => assignment.canBeProgressedWith(teamMember))
             .sort((x, y) => x.assignees.length - y.assignees.length);
 

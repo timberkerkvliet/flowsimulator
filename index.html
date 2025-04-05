@@ -116,11 +116,12 @@
         Team size: <input type="text" id="teamSize" value="4"><br>
         Random seed: <input type="text" id="randomSeed" value="fuchsia">
         <br><br>
-        Collaboration efficiency: <input type="text" id="togetherFactor" value="0.8">
+        Collaboration efficiency: <input type="range" id="togetherFactor" value="8" max="10" min="0">
         <br><br>
         Batch size: <input type="text" id="maxBatchSize" value="4"><br>
         WIP limit: <input type="text" id="wipLimit" value="4">
         <br><br>
+        Speed: <input type="range" id="speed" value="50" min="0" max="100">
         <button id="startButton">Start Simulation</button>
     </div>
     <script type="module" src="src/start-simulation.ts">

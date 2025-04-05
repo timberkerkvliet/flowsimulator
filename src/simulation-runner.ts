@@ -8,7 +8,8 @@ import { Strategy } from "./strategy";
 class SimulationRunner {
     constructor(
         private team: Team,
-        private readonly renderer: Renderer
+        private readonly renderer: Renderer,
+        private sleepTime: number
     ) {}
 
     updateWorkFactory(factory: UnitOfWorkFactory) {
@@ -27,11 +28,15 @@ class SimulationRunner {
         this.team = this.team.withSize(teamSize);
     }
 
+    updateSleepTime(sleepTime: number) {
+        this.sleepTime = sleepTime;
+    }
+
     async run() {
         while (true) {
             this.team = this.team.tick();
             this.renderer.render(this.team);
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, this.sleepTime));
         }
     }
 
