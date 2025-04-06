@@ -80,7 +80,7 @@ class Strategy {
                 let candidates = result.assignments
                     .filter(assignment => assignment.assignees.length > 0)
                     .filter(assignment => assignment.batch.canCollaborate)
-                    .sort((x, y) => y.assignees.length - x.assignees.length);
+                    .sort((x, y) => x.assignees.length - y.assignees.length);
                 
                 if (candidates.length > 0) {
                     result = result.assign(member, candidates[0].batch);

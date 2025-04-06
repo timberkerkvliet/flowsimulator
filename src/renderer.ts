@@ -25,6 +25,7 @@ class Renderer {
     private done: HTMLElement;
     private cycleTime: HTMLElement;
     private throughput: HTMLElement;
+    private utilization: HTMLElement;
 
     constructor() {
         this.backlog = document.getElementById('backlog');
@@ -32,13 +33,14 @@ class Renderer {
         this.done = document.getElementById('done');
         this.cycleTime = document.getElementById('cycletime');
         this.throughput = document.getElementById('throughput');
+        this.utilization = document.getElementById('utilization');
     }
 
     render(team: Team) {
         this.renderBacklog(team.backlog());
         this.renderProgress(team);
         this.renderDone(team.workDone());
-        this.renderStats(team.workDone());
+        this.renderStats(team.workDone(), team.size.value);
     }
 
     private renderBacklog(workOnBacklog: Backlog) {
@@ -89,9 +91,12 @@ class Renderer {
         this.done.innerHTML = html;
     }
 
-    private renderStats(workDone: WorkDone) {
+    private renderStats(workDone: WorkDone, teamSize: number) {
+        const throughPut = workDone.throughPut();
         this.cycleTime.innerHTML = workDone.averageCycleTime().toFixed(3);
-        this.throughput.innerHTML = workDone.throughPut().toFixed(3);
+        this.throughput.innerHTML = throughPut.toFixed(3);
+        this.utilization.innerHTML = (throughPut/teamSize*100).toFixed(1) + "%"
+        
     }
 
 }

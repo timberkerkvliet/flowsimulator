@@ -30,6 +30,10 @@ class Team {
         );
     }
 
+    public get size(): PositiveInteger {
+        return this.props.teamSize;
+    }
+
     public backlog(): Backlog {
         return this.props.backlog;
     }
