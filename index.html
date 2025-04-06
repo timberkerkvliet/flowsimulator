@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.0/gsap.min.js"></script>
     <title>Flow Simulation</title>
     <style>
         #backlogtitle {
@@ -110,18 +109,22 @@
     <div id="done"></div>
 
     <div id="panel">
+        Flowsimulator<br><br>
+        Please <a href="README.html" target="_blank">read me</a> for context
+        <br><br>
         Avg cycle time: <span id="cycletime"></span><br>
         Throughput: <span id="throughput"></span>
         <br><br>
         Team size: <input type="text" id="teamSize" value="4"><br>
         Random seed: <input type="text" id="randomSeed" value="fuchsia">
         <br><br>
-        Collaboration efficiency: <input type="range" id="togetherFactor" value="8" max="10" min="0">
+        Collaboration efficiency: <input type="range" id="collaborationEfficiency" value="8" max="10" min="0">
         <br><br>
-        Batch size: <input type="text" id="maxBatchSize" value="4"><br>
+        Batch size: <input type="text" id="batchSize" value="4"><br>
         WIP limit: <input type="text" id="wipLimit" value="4">
         <br><br>
         Speed: <input type="range" id="speed" value="50" min="0" max="100">
+        <br><br>
         <button id="startButton">Start Simulation</button>
     </div>
     <script type="module" src="src/start-simulation.ts">
