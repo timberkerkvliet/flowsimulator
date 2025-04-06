@@ -73,7 +73,7 @@ async function clickButton() {
 
     const teamSize = PositiveInteger.fromNumber(parseFloat(teamSizeElement.value));
 
-    const sleepTime = 5000/parseFloat(speedElement.value)
+    const sleepTime = 5000/(parseFloat(speedElement.value) + 1)
     
     if (SimulationState.runner === undefined) {
         const team = Team.new(

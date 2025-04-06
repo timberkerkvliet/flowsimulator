@@ -2,6 +2,23 @@ import { WorkDone } from "./work-done";
 import { Team } from "./team";
 import { Backlog } from "./backlog";
 
+function getColorForNumber(n: number): string {
+    const COLORS = [
+        "#e6194b", // red
+        "#3cb44b", // green
+        "#0082c8", // blue
+        "#f58231", // orange
+        "#911eb4", // purple
+        "#46f0f0", // cyan
+        "#f032e6", // magenta
+        "#d2f53c", // lime (borderline but acceptable)
+        "#fabebe", // light pink (good contrast)
+        "#008080", // teal
+      ];
+    return COLORS[(n - 1) % COLORS.length];
+  }
+
+
 class Renderer {
     private backlog: HTMLElement;
     private inProgress: HTMLElement;
@@ -42,14 +59,14 @@ class Renderer {
                 html += "<tr><td>"
                 assignment.batch.unitsOfWork.forEach(
                     (unit) => {
-                        html += unit.id.charAt(0);
+                        html += "<span style='color:" + getColorForNumber(unit.needsMember.value) + "'>" + unit.id.charAt(0) + "</span>";
                         html += " ";
                     }
                 )
                 html += "<td>"
                 assignment.assignees.forEach(
                     (assignee) => {
-                        html += assignee.value
+                        html += "<span style='color:" + getColorForNumber(assignee.value) + "'>" + assignee.value + "</span>";
                         html += " "
                     }
                 )
