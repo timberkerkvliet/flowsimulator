@@ -59,7 +59,8 @@ class Renderer {
                 html += "<tr><td>"
                 assignment.batch.unitsOfWork.forEach(
                     (unit) => {
-                        html += "<span style='color:" + getColorForNumber(unit.needsMember.value) + "'>" + unit.id.charAt(0) + "</span>";
+                        const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
+                        html += "<span style='color:" + color + "'>" + unit.id.charAt(0) + "</span>";
                         html += " ";
                     }
                 )

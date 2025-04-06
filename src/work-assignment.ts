@@ -51,6 +51,12 @@ class WorkAssignment {
         )
     }
 
+    unassignAll(): WorkAssignment {
+        return new WorkAssignment(
+            {...this.props, assignees: []}
+        )
+    }
+
     start(time: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
             {
@@ -90,6 +96,11 @@ class WorkAssignments {
             .reduce((acc, val) => acc.concat(val), []);
     }
 
+    public get batchesOfWork(): BatchOfWork[] {
+        return this.assignments
+            .map(assignment => assignment.batch)
+    }
+
     public isAssigned(teamMember: PositiveInteger): boolean {
         return this.assignments.filter(assignment => assignment.isAssigned(teamMember)).length > 0;
     }
@@ -98,6 +109,18 @@ class WorkAssignments {
         return this.assignments
             .map(assignment => assignment.assignees)
             .reduce((acc, val) => acc.concat(val), []);
+    }
+
+    public unassigned(teamSize: PositiveInteger): PositiveInteger[] {
+        let result = [];
+        let member = PositiveInteger.fromNumber(1);
+        while (member.leq(teamSize)) {
+            if (!this.isAssigned(member)) {
+                result = [...result, member];
+            }
+            member = member.next();
+        }
+        return result;
     }
 
     public assignedToWorkThatCanBeProgressedWithout(teamMember: PositiveInteger): boolean {
@@ -128,6 +151,11 @@ class WorkAssignments {
     unassign(member: PositiveInteger): WorkAssignments {
         return new WorkAssignments(
             {assignments: this.assignments.map(assignment => assignment.unassign(member))});
+    }
+
+    unassignAll(): WorkAssignments {
+        return new WorkAssignments(
+            {assignments: this.assignments.map(assignment => assignment.unassignAll())});
     }
 
     public get batchesDone(): BatchOfWork[] {

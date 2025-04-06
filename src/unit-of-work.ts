@@ -7,7 +7,7 @@ function randomTeamMember(teamSize: PositiveInteger, randomSeed: () => number): 
 class UnitOfWork {
     public readonly id: string
     public readonly timeStart: PositiveInteger | undefined
-    public readonly needsMember: PositiveInteger | undefined
+    public readonly needsMember: PositiveInteger
 
     private readonly baseProbability: number
     private readonly randomSeed: () => number
@@ -17,7 +17,7 @@ class UnitOfWork {
         baseProbability: number,
         togetherFactor: number,
         randomSeed: () => number,
-        needsMember: PositiveInteger | undefined,
+        needsMember: PositiveInteger,
         timeStart: PositiveInteger | undefined,
         timeDone: PositiveInteger | undefined
     }) {
@@ -52,9 +52,11 @@ class UnitOfWork {
             return false;
         }
 
-        let needsMember = this.needsMember;
+        return assignees.filter(assignee => assignee.equals(this.needsMember)).length > 0;
+    }
 
-        return needsMember === undefined || assignees.filter(assignee => assignee.equals(needsMember)).length > 0;
+    public get canCollaborate() : boolean {
+        return this.props.togetherFactor > 0;
     }
 
     public progress(

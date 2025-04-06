@@ -30,6 +30,18 @@ class BatchOfWork {
         return this.unitsOfWork.filter(unit => unit.canBeProgressedBy(assignees)).length > 0;
     }
 
+    public get canCollaborate(): boolean {
+        return this.unitsOfWork.filter(unit => unit.canCollaborate).length > 0;
+    }
+
+    public get membersNeeded(): PositiveInteger[] {
+        const values = this.unitsOfWork
+            .filter(unit => !unit.isDone())
+            .map(unit => unit.needsMember.value)
+        const s = new Set(values)
+        return [...s].map(x => PositiveInteger.fromNumber(x));
+    }
+
     public get id(): string {
         return this.unitsOfWork.map(unit => unit.id).join("-");
     }

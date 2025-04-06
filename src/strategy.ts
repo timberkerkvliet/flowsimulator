@@ -2,12 +2,57 @@ import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
 import { WorkAssignment, WorkAssignments } from "./work-assignment";
 import { Backlog } from "./backlog";
-import { min } from "simple-statistics";
+import { equalIntervalBreaks, min } from "simple-statistics";
 
 type StrategyExecutionResult = {
     assignments: WorkAssignments,
     backlog: Backlog,
     success: boolean
+}
+
+type AssignOption = {
+    batch: BatchOfWork,
+    member: PositiveInteger
+}
+
+class ChoiceMatrix {
+    private readonly options: AssignOption[]
+
+    constructor(
+        private readonly batches: BatchOfWork[],
+        private readonly members: PositiveInteger[]
+    ) {
+        let options: AssignOption[] = [];
+        for (const batch of this.batches) {
+            for (const member of this.members) {
+                if (batch.membersNeeded.filter(x => x.equals(member)).length > 0) {
+                    options = [
+                        ...options,
+                        {batch, member}
+                    ]
+                }
+            }
+        }
+        this.options = options;
+        
+    }
+
+    private choose(option: AssignOption): ChoiceMatrix {
+        return new ChoiceMatrix(
+            this.batches.filter(batch => !batch.equals(option.batch)),
+            this.members.filter(member => !member.equals(option.member))
+        )
+    }
+
+    resolve(): AssignOption[] {
+        if (this.options.length === 0) {
+            return [];
+        }
+        return this.options
+        .map(option => [option, ...this.choose(option).resolve()])
+        .sort((x, y) => y.length - x.length)[0]
+    }
+
 }
 
 class Strategy {
@@ -18,91 +63,53 @@ class Strategy {
         }
     ) {}
 
-    private optimizeFor(
+    execute(
         current: WorkAssignments,
         backlog: Backlog,
-        teamMember: PositiveInteger,
         teamSize: PositiveInteger
     ): StrategyExecutionResult {
-        if (!current.assignedToWorkThatCanBeProgressedWithout(teamMember)) {
-            return {assignments: current, backlog: backlog, success: true};
-        }
-
-        let result = current.unassign(teamMember);
-
-        let primaryCandidates = result.assignments.filter(assignment => assignment.assignees.length === 0);
-
-        if (result.number.lessThan(this.props.wipLimit)) {
-            const batch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
-            primaryCandidates = [...primaryCandidates, new WorkAssignment({batch, assignees:[]})]
-        }
-
-        primaryCandidates = primaryCandidates.filter(assignment => assignment.canBeProgressedWith(teamMember));
-
-        if (primaryCandidates.length > 0) {
-            result = result.assign(teamMember, primaryCandidates[0].batch);
-            return {
-                assignments: result,
-                backlog: backlog.remove(result.unitsOfWork, teamSize),
-                success: true
-            };
-        }
+        let result = current.unassignAll();
 
         let candidates = result.assignments
-            .filter(assignment => assignment.canBeProgressedWith(teamMember))
-            .sort((x, y) => x.assignees.length - y.assignees.length);
+                .filter(assignment => assignment.assignees.length === 0)
+                .map(assignment => assignment.batch)
 
-        if (candidates.length === 0) {
-            return {assignments: result, backlog: backlog, success: false};
+        if (result.number.lessThan(this.props.wipLimit)) {
+            const newBatch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
+            candidates = [newBatch, ...candidates];
         }
 
-        result = result.assign(teamMember, candidates[0].batch);
+        const matrix = new ChoiceMatrix(candidates, result.unassigned(teamSize));
+        const options = matrix.resolve();
+
+        for (const option of options) {
+            result = result.assign(option.member, option.batch);
+            backlog = backlog.remove(result.unitsOfWork, teamSize);
+        }
+        
+        let member = PositiveInteger.fromNumber(1);
+
+        while (member.leq(teamSize)) {
+            if (!result.isAssigned(member)) {
+                let candidates = result.assignments
+                    .filter(assignment => assignment.assignees.length > 0)
+                    .filter(assignment => assignment.batch.canCollaborate)
+                    .sort((x, y) => y.assignees.length - x.assignees.length);
+                
+                if (candidates.length > 0) {
+                    result = result.assign(member, candidates[0].batch);
+                }
+            }
+
+            member = member.next();
+        }
+        
 
         return {
             assignments: result,
             backlog: backlog.remove(result.unitsOfWork, teamSize),
             success: true
         };
-    }
-
-    private iteration(
-        current: WorkAssignments,
-        backlog: Backlog,
-        teamSize: PositiveInteger
-    ): StrategyExecutionResult {
-        let result = {
-            assignments: current,
-            backlog,
-            success: false
-        }
-        let member = PositiveInteger.fromNumber(1);
-        let success = true;
-        while (member.leq(teamSize)) {
-            result = this.optimizeFor(result.assignments, result.backlog, member, teamSize);
-            if (!result.success) {
-                success = false; 
-            }
-            member = member.next();
-        }
-        return {assignments: result.assignments, backlog: result.backlog, success};
-    }
-
-    execute(
-        current: WorkAssignments,
-        backlog: Backlog,
-        teamSize: PositiveInteger
-    ): StrategyExecutionResult {
-        let result = {
-            assignments: current,
-            backlog,
-            success: false
-        }
-
-        while (!result.success) {
-            result = this.iteration(result.assignments, result.backlog, teamSize);
-        }
-
-       return result;
     }
 }
 
