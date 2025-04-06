@@ -45,7 +45,8 @@ class Renderer {
         let html = "";
         workOnBacklog.everything().forEach(
             (unit) => {
-                html += unit.id.charAt(0)
+                const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
+                html += "<span style='color:" + color + "'>" + unit.id.charAt(0) + "</span>";
                 html += " ";
             }
         )

@@ -26,10 +26,6 @@ class BatchOfWork {
         );
     }
 
-    public canBeProgressedBy(assignees: PositiveInteger[]): boolean {
-        return this.unitsOfWork.filter(unit => unit.canBeProgressedBy(assignees)).length > 0;
-    }
-
     public get canCollaborate(): boolean {
         return this.unitsOfWork.filter(unit => unit.canCollaborate).length > 0;
     }

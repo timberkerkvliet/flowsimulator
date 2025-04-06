@@ -19,26 +19,6 @@ class WorkAssignment {
         return this.assignees.filter(assignee => assignee.equals(teamMember)).length > 0;
     }
 
-    public canBeProgressedWithout(teamMember: PositiveInteger) {
-        if (!this.isAssigned(teamMember)) {
-            return true;
-        }
-
-        if (!this.batch.canBeProgressedBy(this.assignees)) {
-            return true;
-        }
-
-        const without = this.assignees.filter(assignee => !assignee.equals(teamMember));
-
-        return this.batch.canBeProgressedBy(without);
-    }
-
-    public canBeProgressedWith(member: PositiveInteger): boolean {
-        const updatedAssigneeValues = [...this.assignees, member];
-
-        return this.batch.canBeProgressedBy(updatedAssigneeValues);
-    }
-
     assign(member: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
             {...this.props, assignees: [...this.assignees, member]}
@@ -123,16 +103,6 @@ class WorkAssignments {
         return result;
     }
 
-    public assignedToWorkThatCanBeProgressedWithout(teamMember: PositiveInteger): boolean {
-        return this.assignments.every(
-            assignment => assignment.canBeProgressedWithout(teamMember)
-        );
-    }
-
-    add(assignment: WorkAssignment): WorkAssignments {
-        return new WorkAssignments({assignments: [...this.assignments, assignment]})
-    }
-
     assign(member: PositiveInteger, batch: BatchOfWork): WorkAssignments {
         const batchIndex = this.assignments.findIndex(assignment => assignment.batch.equals(batch));
         let assignments = this.assignments;
@@ -146,11 +116,6 @@ class WorkAssignments {
         }
         
         return new WorkAssignments({assignments});
-    }
-
-    unassign(member: PositiveInteger): WorkAssignments {
-        return new WorkAssignments(
-            {assignments: this.assignments.map(assignment => assignment.unassign(member))});
     }
 
     unassignAll(): WorkAssignments {
