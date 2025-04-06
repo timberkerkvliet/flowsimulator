@@ -48,10 +48,18 @@ class ChoiceMatrix {
         if (this.options.length === 0) {
             return [];
         }
-        return this.options
-        .map(option => [option, ...this.choose(option).resolve()])
-        .sort((x, y) => y.length - x.length)[0]
-    }
+    
+        let best: AssignOption[] = [];
+    
+        for (const option of this.options) {
+            const result = [option, ...this.choose(option).resolve()];
+            if (result.length > best.length) {
+                best = result;
+            }
+        }
+    
+        return best;
+    }    
 
 }
 
@@ -63,31 +71,9 @@ class Strategy {
         }
     ) {}
 
-    execute(
-        current: WorkAssignments,
-        backlog: Backlog,
-        teamSize: PositiveInteger
-    ): StrategyExecutionResult {
-        let result = current.unassignAll();
-
-        let candidates = result.assignments
-                .filter(assignment => assignment.assignees.length === 0)
-                .map(assignment => assignment.batch)
-
-        if (result.number.lessThan(this.props.wipLimit)) {
-            const newBatch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
-            candidates = [newBatch, ...candidates];
-        }
-
-        const matrix = new ChoiceMatrix(candidates, result.unassigned(teamSize));
-        const options = matrix.resolve();
-
-        for (const option of options) {
-            result = result.assign(option.member, option.batch);
-            backlog = backlog.remove(result.unitsOfWork, teamSize);
-        }
-        
+    private addCollaboration(current: WorkAssignments, teamSize: PositiveInteger): WorkAssignments {
         let member = PositiveInteger.fromNumber(1);
+        let result = current;
 
         while (member.leq(teamSize)) {
             if (!result.isAssigned(member)) {
@@ -103,7 +89,40 @@ class Strategy {
 
             member = member.next();
         }
+
+        return result;
+    }
+
+    execute(
+        current: WorkAssignments,
+        backlog: Backlog,
+        teamSize: PositiveInteger
+    ): StrategyExecutionResult {
+        let result = current.unassignAll();
+
+        let candidates = result.assignments
+                .filter(assignment => assignment.assignees.length === 0)
+                .map(assignment => assignment.batch)
         
+        const matrix = new ChoiceMatrix(candidates, result.unassigned(teamSize));
+        let path = matrix.resolve();
+
+        if (result.number.lessThan(this.props.wipLimit)) {
+            const newBatch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
+            const candidatesWithNew = [newBatch, ...candidates];
+            const matrixWithNew = new ChoiceMatrix(candidatesWithNew, result.unassigned(teamSize));
+            const pathWithNew = matrixWithNew.resolve();
+            if (pathWithNew.length > path.length) {
+                path = pathWithNew;
+            }
+        }
+
+        for (const option of path) {
+            result = result.assign(option.member, option.batch);
+            backlog = backlog.remove(result.unitsOfWork, teamSize);
+        }
+        
+        result = this.addCollaboration(result, teamSize);
 
         return {
             assignments: result,
