@@ -43,6 +43,10 @@ class WorkDone {
         return sum(this.props.work.map(batch => batch.size.value))/this.props.time.value * 4;
     }
 
+    public utilization(): number {
+        return sum(this.props.work.map(batch => batch.utilization))/this.props.time.value;
+    }
+
 }
 
 export { WorkDone }

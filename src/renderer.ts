@@ -95,7 +95,7 @@ class Renderer {
         const throughPut = workDone.throughPut();
         this.cycleTime.innerHTML = workDone.averageCycleTime().toFixed(3);
         this.throughput.innerHTML = throughPut.toFixed(3);
-        this.utilization.innerHTML = (throughPut/teamSize*100).toFixed(1) + "%"
+        this.utilization.innerHTML = (workDone.utilization()*100/teamSize).toFixed(1) + "%"
         
     }
 

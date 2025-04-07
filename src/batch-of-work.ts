@@ -1,4 +1,4 @@
-import { max, min } from "../node_modules/simple-statistics/index"
+import { max, min, sum } from "../node_modules/simple-statistics/index"
 import { PositiveInteger } from "./positive-integer"
 import { UnitOfWork } from "./unit-of-work"
 
@@ -68,6 +68,10 @@ class BatchOfWork {
 
     public get size(): PositiveInteger {
         return PositiveInteger.fromNumber(this.unitsOfWork.length);
+    }
+
+    public get utilization(): number {
+        return sum(this.unitsOfWork.map(unit => unit.utilization))
     }
 
     public equals(batch: BatchOfWork): boolean {

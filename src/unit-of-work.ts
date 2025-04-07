@@ -8,6 +8,7 @@ class UnitOfWork {
     public readonly id: string
     public readonly timeStart: PositiveInteger | undefined
     public readonly needsMember: PositiveInteger
+    public readonly utilization: number
 
     private readonly baseProbability: number
     private readonly randomSeed: () => number
@@ -19,13 +20,15 @@ class UnitOfWork {
         randomSeed: () => number,
         needsMember: PositiveInteger,
         timeStart: PositiveInteger | undefined,
-        timeDone: PositiveInteger | undefined
+        timeDone: PositiveInteger | undefined,
+        utilization: number
     }) {
         this.id = props.id;
         this.baseProbability = props.baseProbability;
         this.randomSeed = props.randomSeed;
         this.timeStart = props.timeStart;
         this.needsMember = props.needsMember;
+        this.utilization = props.utilization;
     }
 
     public get timeDone(): PositiveInteger {
@@ -71,18 +74,20 @@ class UnitOfWork {
         const needsMember = randomTeamMember(teamSize, this.randomSeed);
 
         let timeDone = undefined;
+        let utilization = this.props.utilization;
 
         let s = 0;
 
         for (let k = 0; k < assignees.length; k++) {
             s += this.baseProbability * this.props.togetherFactor**k
+            utilization += this.props.togetherFactor**k
         }
 
         if (this.randomSeed() <= s) {
             timeDone = time;
         }
 
-        return new UnitOfWork({...this.props, needsMember, timeDone})
+        return new UnitOfWork({...this.props, needsMember, utilization, timeDone})
     }
 
     public hasStarted(): boolean {

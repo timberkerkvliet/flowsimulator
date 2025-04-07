@@ -28,7 +28,8 @@ class UnitOfWorkFactory {
             randomSeed: this.props.randomSeed,
             needsMember: randomTeamMember(teamSize, this.props.randomSeed),
             timeStart: undefined,
-            timeDone: undefined
+            timeDone: undefined,
+            utilization: 0
         });
     }
     
