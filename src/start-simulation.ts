@@ -77,7 +77,7 @@ async function clickButton() {
     
     if (SimulationState.runner === undefined) {
         const team = Team.new(
-            Backlog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(30), teamSize),
+            Backlog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(100), teamSize),
             strategy,
             teamSize
         )

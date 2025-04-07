@@ -1,135 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow Simulation</title>
-    <style>
-        #backlogtitle {
-            top: 10px;
-            left: 10px;
-            width: 200px;
-            position: absolute;
-            text-align: center;
-            padding: 5px 0;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 15pt;
-        }
-        #inprogresstitle {
-            top: 10px;
-            left: 240px;
-            width: 200px;
-            position: absolute;
-            text-align: center;
-            padding: 5px 0;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 15pt;
-        }
-        #donetitle {
-            top: 10px;
-            left: 470px;
-            width: 200px;
-            position: absolute;
-            text-align: center;
-            padding: 5px 0;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 15pt;
-        }
-        #backlog {
-            border-color: black;
-            border-style: dotted;
-            width: 200px;
-            min-height: 100px;
-            top: 50px;
-            left: 10px;
-            position: absolute;
-            text-align: center;
-            padding: 5px 0;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 15pt;
-        }
-        #inprogress {
-            border-width: 0px;
-            width: 200px;
-            min-height: 100px;
-            top: 50px;
-            left: 240px;
-            position: absolute;
-            text-align: center;
-            padding: 0px 0;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 15pt;
-        }
-        #done {
-            border-color: black;
-            border-style: dotted;
-            width: 200px;
-            min-height: 100px;
-            top: 50px;
-            left: 470px;
-            position: absolute;
-            text-align: center;
-            padding: 5px 0;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 15pt;
-        }
-        #panel {
-            position: absolute;
-            top: 20px;
-            left: 730px;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            font-size: 15pt;
-            align-content: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid black dotted;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flow Simulator</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 2rem;
+      color: #333;
+    }
 
-        th, td {
-            border: 1px dotted black;
-            padding: 5px;
-            text-align: center;
-            width: 100px; /* Set fixed width for columns */
-        }
+    h1 {
+      font-size: 2rem;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
 
-        th {
-            background-color: #f2f2f2; /* Optional: Add background for headers */
-        }
-    </style>
+    .board {
+      display: flex;
+      justify-content: space-around;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .column {
+      flex: 1;
+      border: 2px dotted #aaa;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 150px;
+      max-height: 300px;
+      background-color: #fff;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    .column h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+      color: #34495e;
+      text-transform: capitalize;
+    }
+
+    #inProgressTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Ensures equal column widths */
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+#inProgressTable th,
+#inProgressTable td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: center;
+  width: 50%; /* Two equal columns */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#inProgressTable th {
+  background-color: #eaf4fc;
+  color: #2c3e50;
+}
+#readme {
+      border-top: 1px solid #ccc;
+      padding-top: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+
+
+    #panel {
+      border-top: 1px solid #ccc;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #panel h3 {
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+
+    #panel label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    #panel input[type="text"],
+    #panel input[type="range"] {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    #panel button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #panel button:hover {
+      background-color: #2980b9;
+    }
+
+    .stats {
+      margin: 1.5rem 0;
+    }
+
+    .stats span {
+      display: block;
+      margin: 0.3rem 0;
+    }
+
+    details {
+      background: #f0f8ff;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 3rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    summary {
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    details p, details li {
+      line-height: 1.6;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+    }
+  </style>
 </head>
 <body>
-    <div id="backlogtitle">backlog</div>
-    <div id="inprogresstitle">in progress</div>
-    <div id="donetitle">done</div>
 
-    <div id="backlog"></div>
-    <div id="inprogress"></div>
-    <div id="done"></div>
+  <h1>🚀 Flow Simulator</h1>
 
-    <div id="panel">
-        Flowsimulator<br><br>
-        Please <a href="README.html" target="_blank">read me</a> for context
-        <br><br>
-        Avg cycle time: <span id="cycletime"></span><br>
-        Throughput: <span id="throughput"></span><br>
-        Utilization: <span id="utilization"></span>
-        <br><br>
-        Team size: <input type="range" id="teamSize" value="4" min="1" max="9"><br>
-        Random seed: <input type="text" id="randomSeed" value="fuchsia">
-        <br><br>
-        Collaboration efficiency: <input type="range" id="collaborationEfficiency" value="8" max="10" min="0">
-        <br><br>
-        Batch size: <input type="text" id="batchSize" value="4"><br>
-        WIP limit: <input type="text" id="wipLimit" value="4">
-        <br><br>
-        Speed: <input type="range" id="speed" value="50" min="0" max="100">
-        <br><br>
-        <button id="startButton">Start Simulation</button>
+  <div class="board">
+    <div class="column" id="backlog">
+      <h2>backlog</h2>
     </div>
-    <script type="module" src="src/start-simulation.ts">
-    </script>
+    <div class="column" id="inprogress">
+      <h2>in progress</h2>
+    </div>
+    <div class="column" id="done">
+      <h2>done</h2>
+    </div>
+    <div class="column" id="stats">
+        <h2>Stats</h2>
+        <div class="stats">
+            <span><strong>Avg cycle time:</strong> <span id="cycletime">--</span></span>
+            <span><strong>Throughput:</strong> <span id="throughput">--</span></span>
+            <span><strong>Utilization:</strong> <span id="utilization">--</span></span>
+          </div>
+      </div>
+  </div>
 
+  <div id="panel">
+    <h3>Simulation Settings</h3>
+
+    <label for="teamSize">Team size</label>
+    <input type="range" id="teamSize" value="4" min="1" max="9">
+
+    <label for="randomSeed">Random seed</label>
+    <input type="text" id="randomSeed" value="fuchsia">
+
+    <label for="collaborationEfficiency">Collaboration efficiency</label>
+    <input type="range" id="collaborationEfficiency" value="8" max="10" min="0">
+
+    <label for="batchSize">Batch size</label>
+    <input type="text" id="batchSize" value="4">
+
+    <label for="wipLimit">WIP limit</label>
+    <input type="text" id="wipLimit" value="4">
+
+    <label for="speed">Speed</label>
+    <input type="range" id="speed" value="50" min="0" max="100">
+
+    <button id="startButton">Start Simulation</button>
+  </div>
+
+  <div id="readme">
+    <summary>📖 What am I looking at? (Read Me)</summary>
+
+    <p>Great question. Let’s break it down:</p>
+
+    <h3>Unit of Work</h3>
+
+    <p>
+        Every letter you see represents a <i>unit of work</i>—a tiny, indivisible slice of (customer) value.
+        Each color tells you which team member is needed to move that task forward. And when a letter turns black? It’s done. Cue the celebration. 🎉
+    </p>
+
+    <h3>In progress</h3>
+
+    <p>
+        When units of work are started, they’re grouped into a <i>batch of work</i>. These batches appear in the left column of the "in progress" area. 
+    </p>
+
+    <p>
+        Each batch in progress has workers assigned to it. Each batch in progress has one or more team members assigned to it. Each team member is represented by a number—because it’s simpler for the simulator. But don’t worry, we know they’re more than just numbers. They have hopes, dreams, and probably strong opinions about coffee.
+    </p>
+
+    <h3>Statistics</h3>
+
+    <p>Time for some numbers!</p>
+    <ul>
+        <li><strong>Avg cycle time:</strong> The average time between starting a batch and completing it.</li>
+        <li><strong>Throughput:</strong> How many units of work get done per time unit.</li>
+        <li><strong>Utilization:</strong> How much of the workers’ time is actually spent working.</li>
+    </ul>
+
+    <h3>Pairing & Mobbing</h3>
+
+    <p>
+        Yes, multiple people can work on the same thing at once—it’s not cheating, it’s collaboration! When two or more workers tackle a batch together, they’re pairing or mobbing. 
+        But collaboration doesn’t happen magically. Workers will only pair up if there’s no solo work available *and* the WIP limit allows it. 
+        Want more teamwork? Lower the WIP limit.
+    </p>
+
+    <p>
+        The <i>collaboration efficiency</i> slider lets you control how effective collaboration is. 
+        At 0, collaboration brings no benefits so the team sticks to flying solo. At 1, it's pure synergy—two people finish twice as fast! 
+        The default is 0.8, based on studies that suggest pair programming is about 1.8x as productive as going solo.
+    </p>
+</div>
+  
+
+  <script type="module" src="src/start-simulation.ts"></script>
 </body>
 </html>

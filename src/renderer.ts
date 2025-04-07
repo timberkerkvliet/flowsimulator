@@ -44,7 +44,7 @@ class Renderer {
     }
 
     private renderBacklog(workOnBacklog: Backlog) {
-        let html = "";
+        let html = "<h2>backlog</h2>";
         workOnBacklog.everything().forEach(
             (unit) => {
                 const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
@@ -56,7 +56,7 @@ class Renderer {
     }
 
     private renderProgress(team: Team) {
-        let html = "<table>";
+        let html = "<h2>in progress</h2><table id='inProgressTable'>";
         team.workInProgress().assignments.forEach(
             assignment => {
                 html += "<tr><td>"
@@ -81,7 +81,7 @@ class Renderer {
     }
 
     private renderDone(workDone: WorkDone) {
-        let html = "";
+        let html = "<h2>done</h2>";
         workDone.everything().forEach(
             (unit) => {
                 html += unit.id.charAt(0)
