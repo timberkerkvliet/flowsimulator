@@ -103,6 +103,21 @@ class WorkAssignments {
         return result;
     }
 
+    addBatch(batch: BatchOfWork): WorkAssignments {
+        const assignments = [...this.assignments, new WorkAssignment({batch, assignees: []})];
+        return new WorkAssignments({assignments});
+    }
+
+    cleanUp(): WorkAssignments {
+        return new WorkAssignments(
+            {
+                assignments: this.assignments.filter(
+                    assignment => assignment.batch.hasStarted || assignment.assignees.length > 0
+                )
+            }
+        );
+    }
+
     assign(member: PositiveInteger, batch: BatchOfWork): WorkAssignments {
         const batchIndex = this.assignments.findIndex(assignment => assignment.batch.equals(batch));
         let assignments = this.assignments;

@@ -100,28 +100,25 @@ class Strategy {
     ): StrategyExecutionResult {
         let result = current.unassignAll();
 
+        let tempBacklog = backlog;
+        while (result.number.lessThan(this.props.wipLimit)) {
+            const newBatch = new BatchOfWork(tempBacklog.topOfBacklog(this.props.batchSize));
+            tempBacklog = tempBacklog.remove(newBatch.unitsOfWork, teamSize);
+            result = result.addBatch(newBatch);
+        }
+
         let candidates = result.assignments
-                .filter(assignment => assignment.assignees.length === 0)
-                .map(assignment => assignment.batch)
+            .filter(assignment => assignment.assignees.length === 0)
+            .map(assignment => assignment.batch)
         
         const matrix = new ChoiceMatrix(candidates, result.unassigned(teamSize));
         let path = matrix.resolve();
 
-        if (result.number.lessThan(this.props.wipLimit)) {
-            const newBatch = new BatchOfWork(backlog.topOfBacklog(this.props.batchSize));
-            const candidatesWithNew = [newBatch, ...candidates];
-            const matrixWithNew = new ChoiceMatrix(candidatesWithNew, result.unassigned(teamSize));
-            const pathWithNew = matrixWithNew.resolve();
-            if (pathWithNew.length > path.length) {
-                path = pathWithNew;
-            }
-        }
-
         for (const option of path) {
             result = result.assign(option.member, option.batch);
-            backlog = backlog.remove(result.unitsOfWork, teamSize);
         }
         
+        result = result.cleanUp();
         result = this.addCollaboration(result, teamSize);
 
         return {
