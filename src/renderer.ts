@@ -48,7 +48,12 @@ class Renderer {
         workOnBacklog.everything().forEach(
             (unit) => {
                 const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
-                html += "<span style='color:" + color + "'>" + unit.id.charAt(0) + "</span>";
+                html += `
+                    <span
+                        class="unitOfWork" style="color: ${color}; border-color: ${color}">
+                        ${unit.id.charAt(0)}
+                    </span>
+                `;
                 html += " ";
             }
         )
@@ -56,35 +61,76 @@ class Renderer {
     }
 
     private renderProgress(team: Team) {
-        let html = "<h2>in progress</h2><table id='inProgressTable'>";
-        team.workInProgress().assignments.forEach(
-            assignment => {
-                html += "<tr><td>"
-                assignment.batch.unitsOfWork.forEach(
-                    (unit) => {
-                        const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
-                        html += "<span style='color:" + color + "'>" + unit.id.charAt(0) + "</span>";
-                        html += " ";
-                    }
-                )
-                html += "<td>"
-                assignment.assignees.forEach(
-                    (assignee) => {
-                        html += "<span style='color:" + getColorForNumber(assignee.value) + "'>" + assignee.value + "</span>";
-                        html += " "
-                    }
-                )
-            }
-        )
-        html += "</tr>"
+        let html = `
+            <h2>In Progress</h2>
+            <table id="inProgressTable" style="border-collapse: collapse; width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 6px;">Batch</th>
+                        <th style="text-align: left; padding: 6px;">Assigned</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+    
+        team.workInProgress().assignments.forEach(assignment => {
+            html += "<tr><td style='padding: 6px;'>";
+    
+            assignment.batch.unitsOfWork.forEach(unit => {
+                const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
+                const doneMark = unit.isDone() ? "✔️" : "";
+                html += `
+                    <span
+                        class="unitOfWork" style="color: ${color}; border-color: ${color}">
+                        ${unit.id.charAt(0)}
+                    </span>
+                `;
+            });
+    
+            html += "</td><td style='padding: 6px;'>";
+    
+            assignment.assignees.forEach(assignee => {
+                const color = getColorForNumber(assignee.value);
+                html += `
+                    <span 
+                        title="Worker ID: ${assignee.value}"
+                        style="
+                            display: inline-block;
+                            margin-right: 6px;
+                            padding: 2px 6px;
+                            border-radius: 4px;
+                            background-color: ${color}20;
+                            color: ${color};
+                            font-weight: bold;
+                            font-family: monospace;
+                        ">
+                        ${assignee.value}
+                    </span>
+                `;
+            });
+    
+            html += "</td></tr>";
+        });
+    
+        html += `
+                </tbody>
+            </table>
+        `;
+    
         this.inProgress.innerHTML = html;
     }
+    
 
     private renderDone(workDone: WorkDone) {
         let html = "<h2>done</h2>";
         workDone.everything().forEach(
             (unit) => {
-                html += unit.id.charAt(0)
+                html += `
+                    <span
+                        class="unitOfWork" style="color: black; border-color: black">
+                        ${unit.id.charAt(0)}
+                    </span>
+                `;
                 html += " ";
             }
         )
