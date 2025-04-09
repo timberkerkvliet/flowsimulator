@@ -23,7 +23,7 @@ class UnitOfWorkFactory {
     public create(teamSize: PositiveInteger): UnitOfWork {
         return new UnitOfWork({
             id: randomLetters(this.props.randomSeed),
-            baseProbability: 0.25,
+            baseProbability: 0.1,
             togetherFactor: this.props.togetherFactor,
             randomSeed: this.props.randomSeed,
             needsMember: randomTeamMember(teamSize, this.props.randomSeed),

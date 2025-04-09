@@ -93,7 +93,6 @@ class Renderer {
                 const color = getColorForNumber(assignee.value);
                 html += `
                     <span 
-                        title="Worker ID: ${assignee.value}"
                         style="
                             display: inline-block;
                             margin-right: 6px;
