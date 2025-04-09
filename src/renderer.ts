@@ -78,7 +78,6 @@ class Renderer {
     
             assignment.batch.unitsOfWork.forEach(unit => {
                 const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
-                const doneMark = unit.isDone() ? "✔️" : "";
                 html += `
                     <span
                         class="unitOfWork" style="color: ${color}; border-color: ${color}">

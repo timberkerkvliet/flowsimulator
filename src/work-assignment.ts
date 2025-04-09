@@ -46,11 +46,11 @@ class WorkAssignment {
         )
     }
 
-    progress(time: PositiveInteger, teamSize: PositiveInteger): WorkAssignment {
+    progress(time: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
             {
                 ...this.props,
-                batch: this.batch.progress(time, this.assignees, teamSize)
+                batch: this.batch.progress(time, this.assignees)
             }
         )
     }
@@ -162,10 +162,10 @@ class WorkAssignments {
         )
     }
 
-    progress(time: PositiveInteger, teamSize: PositiveInteger): WorkAssignments {
+    progress(time: PositiveInteger): WorkAssignments {
         return new WorkAssignments(
             {
-                assignments: this.assignments.map(assignment => assignment.progress(time, teamSize))
+                assignments: this.assignments.map(assignment => assignment.progress(time))
             }
         )
     }

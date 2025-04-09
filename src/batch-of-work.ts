@@ -11,7 +11,7 @@ class BatchOfWork {
         );
     }
 
-    progress(time: PositiveInteger, assigness: PositiveInteger[], teamSize: PositiveInteger): BatchOfWork {
+    progress(time: PositiveInteger, assigness: PositiveInteger[]): BatchOfWork {
         const unitsOfWork = this.unitsOfWork;
         const notDoneIndex = unitsOfWork.findIndex(unit => unit.canBeProgressedBy(assigness))
 
@@ -21,7 +21,7 @@ class BatchOfWork {
 
         return new BatchOfWork(
             unitsOfWork.map((unit, index) => 
-                index === notDoneIndex ? unit.progress(time, assigness, teamSize): unit
+                index === notDoneIndex ? unit.progress(time, assigness): unit
             )
         );
     }

@@ -64,15 +64,12 @@ class UnitOfWork {
 
     public progress(
         time: PositiveInteger,
-        assignees: PositiveInteger[],
-        teamSize: PositiveInteger
+        assignees: PositiveInteger[]
     ): UnitOfWork {
         if (!this.canBeProgressedBy(assignees)) {
             return this;
         }
-        
-        const needsMember = randomTeamMember(teamSize, this.randomSeed);
-
+ 
         let timeDone = undefined;
         let utilization = this.props.utilization;
 
@@ -87,7 +84,7 @@ class UnitOfWork {
             timeDone = time;
         }
 
-        return new UnitOfWork({...this.props, needsMember, utilization, timeDone})
+        return new UnitOfWork({...this.props, utilization, timeDone})
     }
 
     public hasStarted(): boolean {
