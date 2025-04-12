@@ -39,7 +39,6 @@ class Renderer {
     render(team: Team) {
         this.renderBacklog(team.backlog());
         this.renderProgress(team);
-        this.renderDone(team.workDone());
         this.renderStats(team.workDone(), team.size.value);
     }
 
@@ -118,23 +117,6 @@ class Renderer {
         this.inProgress.innerHTML = html;
     }
     
-
-    private renderDone(workDone: WorkDone) {
-        let html = "<h2>done</h2>";
-        workDone.everything().forEach(
-            (unit) => {
-                html += `
-                    <span
-                        class="unitOfWork" style="color: black; border-color: black">
-                        ${unit.id.charAt(0)}
-                    </span>
-                `;
-                html += " ";
-            }
-        )
-        this.done.innerHTML = html;
-    }
-
     private renderStats(workDone: WorkDone, teamSize: number) {
         const throughPut = workDone.throughPut();
         this.cycleTime.innerHTML = workDone.averageCycleTime().toFixed(3);
