@@ -66,8 +66,12 @@ class WorkAssignments {
 
     public get assignments(): WorkAssignment[] { return this.props.assignments; }
     
-    public get number(): PositiveInteger {
-        return PositiveInteger.fromNumber(this.assignments.length);
+    public get numberInProgress(): PositiveInteger {
+        return PositiveInteger.fromNumber(
+            this.assignments
+                .filter(assignment => !assignment.batch.isDone)
+                .length
+        );
     }
 
     public get unitsOfWork(): UnitOfWork[] {
@@ -104,7 +108,16 @@ class WorkAssignments {
     }
 
     addBatch(batch: BatchOfWork): WorkAssignments {
-        const assignments = [...this.assignments, new WorkAssignment({batch, assignees: []})];
+        const batchIndex = this.assignments.findIndex(assignment => assignment.batch.isDone);
+
+        let assignments = this.assignments;
+
+        if (batchIndex === -1) {
+            assignments = [...assignments, new WorkAssignment({batch, assignees: []})];
+        } else {
+            assignments[batchIndex] = new WorkAssignment({batch, assignees: []})
+        }
+
         return new WorkAssignments({assignments});
     }
 
@@ -125,7 +138,7 @@ class WorkAssignments {
         assignments = assignments.map(assignment => assignment.unassign(member));
 
         if (batchIndex === -1) {
-            assignments = [...assignments, new WorkAssignment({batch, assignees: [member]})];
+            assignments = [new WorkAssignment({batch, assignees: [member]}), ...assignments];
         } else {
             assignments[batchIndex] = assignments[batchIndex].assign(member)
         }
@@ -142,15 +155,6 @@ class WorkAssignments {
         return this.assignments
             .map(assignment => assignment.batch)
             .filter(batch => batch.isDone);
-    }
-
-    removeDone(): WorkAssignments {
-        return new WorkAssignments(
-            {
-                assignments: this.assignments
-                    .filter(assignment => !assignment.batch.isDone)
-            }
-        );
     }
 
     start(time: PositiveInteger): WorkAssignments {

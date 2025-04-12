@@ -21,11 +21,13 @@ class WorkDone {
 
     public add(batchesOfWork: BatchOfWork[]) {
         let work = this.props.work;
-        batchesOfWork.forEach(batch => work = [batch, ...work]);
+        const existingIds = work.map(batch => batch.id);
+        const newBatches = batchesOfWork.filter(batch => !existingIds.includes(batch.id))
+
         return new WorkDone(
             {
                 ...this.props,
-                work: work
+                work: [...newBatches, ...work]
             }
         )
     }

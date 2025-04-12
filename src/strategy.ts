@@ -101,7 +101,7 @@ class Strategy {
         let result = current.unassignAll();
 
         let tempBacklog = backlog;
-        while (result.number.lessThan(this.props.wipLimit)) {
+        while (result.numberInProgress.lessThan(this.props.wipLimit)) {
             const newBatch = new BatchOfWork(tempBacklog.topOfBacklog(this.props.batchSize));
             tempBacklog = tempBacklog.remove(newBatch.unitsOfWork, teamSize);
             result = result.addBatch(newBatch);
