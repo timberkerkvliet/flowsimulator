@@ -12,6 +12,10 @@ class PositiveInteger {
         return new PositiveInteger(value);
     }
 
+    public previous(): PositiveInteger {
+        return new PositiveInteger(this.value - 1);
+    }
+
     public next(): PositiveInteger {
         return new PositiveInteger(this.value + 1);
     }

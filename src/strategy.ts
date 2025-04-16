@@ -42,7 +42,7 @@ class ChoiceMatrix {
         )
     }
 
-    resolve(): AssignOption[] {
+    resolve(target: PositiveInteger): AssignOption[] {
         if (this.options.length === 0) {
             return [];
         }
@@ -50,7 +50,10 @@ class ChoiceMatrix {
         let best: AssignOption[] = [];
     
         for (const option of this.options) {
-            const result = [option, ...this.choose(option).resolve()];
+            const result = [option, ...this.choose(option).resolve(target.previous())];
+            if (result.length >= target.value) {
+                return result;
+            }
             if (result.length > best.length) {
                 best = result;
             }
@@ -117,7 +120,7 @@ class Strategy {
             .map(assignment => assignment.batch)
         
         const matrix = new ChoiceMatrix(candidates, result.unassigned(teamSize));
-        let path = matrix.resolve();
+        let path = matrix.resolve(teamSize);
 
         for (const option of path) {
             result = result.assign(option.member, option.batch);
