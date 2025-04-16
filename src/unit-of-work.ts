@@ -77,7 +77,7 @@ class UnitOfWork {
     }
 
     public get utilization(): number {
-        return sum(this.tasks.map(unit => unit.utilization))
+        return sum(this.tasks.map(task => task.utilization))
     }
 
     public equals(batch: UnitOfWork): boolean {

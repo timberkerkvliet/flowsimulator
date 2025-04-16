@@ -54,9 +54,8 @@ function valuesFromUrl() {
 }
 
 async function clickButton() {
-    button.textContent = "Update";
-    teamSizeElement.disabled = true;
-    randomSeedElement.disabled = true;
+    button.textContent = "Restart simulation";
+
     const teamSize = PositiveInteger.fromNumber(parseFloat(teamSizeElement.value));
 
     const batchOfWorkFactory = new UnitOfWorkFactory(
@@ -75,31 +74,27 @@ async function clickButton() {
         }
     )
 
-    
-
     const sleepTime = 5000/(parseFloat(speedElement.value) + 1)
-    
-    if (SimulationState.runner === undefined) {
-        const team = Team.new(
-            Backlog.newBacklog(batchOfWorkFactory),
-            strategy,
-            teamSize
-        )
-    
-        const runner = new SimulationRunner(
-            team,
-            new Renderer(),
-            sleepTime
-        );
-    
-        SimulationState.runner = runner;
-        await runner.run();
-    } else {
-        SimulationState.runner.updateWorkFactory(batchOfWorkFactory);
-        SimulationState.runner.updateStrategy(strategy);
-        SimulationState.runner.updateTeamSize(teamSize);
-        SimulationState.runner.updateSleepTime(sleepTime);
+
+    if (SimulationState.runner !== undefined) {
+        SimulationState.runner.stop();
     }
+    
+    const team = Team.new(
+        Backlog.newBacklog(batchOfWorkFactory),
+        strategy,
+        teamSize
+    )
+
+    const runner = new SimulationRunner(
+        team,
+        new Renderer(),
+        sleepTime,
+        false
+    );
+
+    SimulationState.runner = runner;
+    await runner.run();
 }
 
 button.addEventListener('click', clickButton);

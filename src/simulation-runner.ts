@@ -9,31 +9,16 @@ class SimulationRunner {
     constructor(
         private team: Team,
         private readonly renderer: Renderer,
-        private sleepTime: number
+        private sleepTime: number,
+        private stopped: boolean
     ) {}
 
-    updateWorkFactory(factory: UnitOfWorkFactory) {
-        this.team = this.team.withBacklog(
-            this.team.backlog().withWorkFactory(factory)
-        );
-    }
-
-    updateStrategy(strategy: Strategy) {
-        this.team = this.team.withStrategy(
-            strategy
-        )
-    }
-
-    updateTeamSize(teamSize: PositiveInteger) {
-        this.team = this.team.withSize(teamSize);
-    }
-
-    updateSleepTime(sleepTime: number) {
-        this.sleepTime = sleepTime;
+    stop() {
+        this.stopped = true;
     }
 
     async run() {
-        while (true) {
+        while (!this.stopped) {
             this.team = this.team.tick();
             this.renderer.render(this.team);
             await new Promise(resolve => setTimeout(resolve, this.sleepTime));
