@@ -56,11 +56,14 @@ async function clickButton() {
     button.textContent = "Update";
     teamSizeElement.disabled = true;
     randomSeedElement.disabled = true;
+    const teamSize = PositiveInteger.fromNumber(parseFloat(teamSizeElement.value));
 
     const batchOfWorkFactory = new UnitOfWorkFactory(
         {
             randomSeed: seedrandom(randomSeedElement.value),
-            togetherFactor: parseFloat(collaborationEfficiencyElement.value)/10
+            togetherFactor: parseFloat(collaborationEfficiencyElement.value)/10,
+            unitSize: PositiveInteger.fromNumber(2),
+            teamSize
         }
     );
 
@@ -71,13 +74,13 @@ async function clickButton() {
         }
     )
 
-    const teamSize = PositiveInteger.fromNumber(parseFloat(teamSizeElement.value));
+    
 
     const sleepTime = 5000/(parseFloat(speedElement.value) + 1)
     
     if (SimulationState.runner === undefined) {
         const team = Team.new(
-            Backlog.newBacklog(batchOfWorkFactory, PositiveInteger.fromNumber(100), teamSize),
+            Backlog.newBacklog(batchOfWorkFactory),
             strategy,
             teamSize
         )

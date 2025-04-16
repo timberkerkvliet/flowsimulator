@@ -1,101 +1,89 @@
+import { max, min, sum } from "simple-statistics"
 import { PositiveInteger } from "./positive-integer"
-
-function randomTeamMember(teamSize: PositiveInteger, randomSeed: () => number): PositiveInteger {
-    return PositiveInteger.fromNumber(Math.floor(randomSeed() * teamSize.value) + 1);
-}
+import { Task } from "./task"
 
 class UnitOfWork {
-    public readonly id: string
-    public readonly timeStart: PositiveInteger | undefined
-    public readonly needsMember: PositiveInteger
-    public readonly utilization: number
+    constructor(public readonly tasks: Task[]) {}
 
-    private readonly baseProbability: number
-    private readonly randomSeed: () => number
-    
-    constructor(private readonly props: {
-        id: string,
-        baseProbability: number,
-        togetherFactor: number,
-        randomSeed: () => number,
-        needsMember: PositiveInteger,
-        timeStart: PositiveInteger | undefined,
-        timeDone: PositiveInteger | undefined,
-        utilization: number
-    }) {
-        this.id = props.id;
-        this.baseProbability = props.baseProbability;
-        this.randomSeed = props.randomSeed;
-        this.timeStart = props.timeStart;
-        this.needsMember = props.needsMember;
-        this.utilization = props.utilization;
+    start(time: PositiveInteger): UnitOfWork {
+        return new UnitOfWork(
+            this.tasks.map(unit => unit.start(time))
+        );
+    }
+
+    progress(time: PositiveInteger, assigness: PositiveInteger[]): UnitOfWork {
+        const tasks = this.tasks;
+        const notDoneIndex = tasks.findIndex(unit => unit.canBeProgressedBy(assigness))
+
+        if (assigness.length > 0 && notDoneIndex === -1) {
+            console.log("No progress")
+        }
+
+        return new UnitOfWork(
+            tasks.map((unit, index) => 
+                index === notDoneIndex ? unit.progress(time, assigness): unit
+            )
+        );
+    }
+
+
+    public canBeProgressedBy(assignees: PositiveInteger[]): boolean {
+        return this.tasks.filter(task => task.canBeProgressedBy(assignees)).length > 0;
+    }
+
+
+    public get canCollaborate(): boolean {
+        return this.tasks.filter(unit => unit.canCollaborate).length > 0;
+    }
+
+    public get membersNeeded(): PositiveInteger[] {
+        const values = this.tasks
+            .filter(unit => !unit.isDone())
+            .map(unit => unit.needsMember.value)
+        const s = new Set(values)
+        return [...s].map(x => PositiveInteger.fromNumber(x));
+    }
+
+    public get id(): string {
+        return this.tasks.map(unit => unit.id).join("-");
     }
 
     public get timeDone(): PositiveInteger {
-        if (this.props.timeDone === undefined) {
-            throw new Error();
-        }
-        return this.props.timeDone;
+        return PositiveInteger.fromNumber(
+            max(this.tasks.map(unit => unit.timeDone.value))
+        );
+    }
+
+    public get timeStart(): PositiveInteger {
+        return PositiveInteger.fromNumber(
+            min(this.tasks.map(unit => unit.timeStart.value))
+        );
+    }
+
+    public get isDone(): boolean {
+        return this.tasks.map(unit => unit.isDone()).every(x => x);
+    }
+
+    public get hasStarted(): boolean {
+        return this.tasks.map(unit => unit.hasStarted()).every(x => x);
     }
 
     public get timeInProgress(): PositiveInteger {
         return this.timeDone.minus(this.timeStart);
     }
 
-    public start(time: PositiveInteger): UnitOfWork {
-        if (this.hasStarted()) {
-            return this;
-        }
-
-        return new UnitOfWork({...this.props, timeStart: time})
+    public get size(): PositiveInteger {
+        return PositiveInteger.fromNumber(this.tasks.length);
     }
 
-    public canBeProgressedBy(assignees: PositiveInteger[]): boolean {
-        if (assignees.length === 0 || this.isDone()) {
-            return false;
-        }
-
-        return assignees.filter(assignee => assignee.equals(this.needsMember)).length > 0;
+    public get utilization(): number {
+        return sum(this.tasks.map(unit => unit.utilization))
     }
 
-    public get canCollaborate() : boolean {
-        return this.props.togetherFactor > 0;
-    }
-
-    public progress(
-        time: PositiveInteger,
-        assignees: PositiveInteger[]
-    ): UnitOfWork {
-        if (!this.canBeProgressedBy(assignees)) {
-            return this;
-        }
- 
-        let timeDone = undefined;
-        let utilization = this.props.utilization;
-
-        let s = 0;
-
-        for (let k = 0; k < assignees.length; k++) {
-            s += this.baseProbability * this.props.togetherFactor**k
-            utilization += this.props.togetherFactor**k
-        }
-
-        if (this.randomSeed() <= s) {
-            timeDone = time;
-        }
-
-        return new UnitOfWork({...this.props, utilization, timeDone})
-    }
-
-    public hasStarted(): boolean {
-        return this.timeStart !== undefined;
-    }
-
-    public isDone(): boolean {
-        return this.props.timeDone !== undefined;
+    public equals(batch: UnitOfWork): boolean {
+        return this.id === batch.id;
     }
 
 }
 
-export { UnitOfWork, randomTeamMember }
-
+export { UnitOfWork }

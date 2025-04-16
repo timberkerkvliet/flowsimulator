@@ -45,17 +45,22 @@ class Renderer {
     private renderBacklog(workOnBacklog: Backlog) {
         let html = "<h2>backlog</h2>";
         workOnBacklog.everything().forEach(
-            (unit) => {
-                const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
-                html += `
-                    <span
-                        class="unitOfWork" style="color: ${color}; border-color: ${color}">
-                        ${unit.id.charAt(0)}
-                    </span>
-                `;
-                html += " ";
+            unit => {
+                unit.tasks.forEach(
+                    (task) => {
+                        const color = task.isDone() ? 'black' : getColorForNumber(task.needsMember.value);
+                        html += `
+                            <span
+                                class="unitOfWork" style="color: ${color}; border-color: ${color}">
+                                ${task.id.charAt(0)}
+                            </span>
+                        `;
+                        html += " ";
+                    }
+                );
+                html += "<br>";
             }
-        )
+        );
         this.backlog.innerHTML = html;
     }
 
@@ -75,15 +80,22 @@ class Renderer {
         team.workInProgress().assignments.forEach(assignment => {
             html += "<tr><td style='padding: 6px;'>";
     
-            assignment.batch.unitsOfWork.forEach(unit => {
-                const color = unit.isDone() ? 'black' : getColorForNumber(unit.needsMember.value);
-                html += `
-                    <span
-                        class="unitOfWork" style="color: ${color}; border-color: ${color}">
-                        ${unit.id.charAt(0)}
-                    </span>
-                `;
-            });
+            assignment.batch.unitsOfWork.forEach(
+                unit => {
+                    unit.tasks.forEach(
+                        task => {
+                            const color = task.isDone() ? 'black' : getColorForNumber(task.needsMember.value);
+                            html += `
+                                <span
+                                    class="unitOfWork" style="color: ${color}; border-color: ${color}">
+                                    ${task.id.charAt(0)}
+                                </span>
+                            `;
+                        }
+                    )
+                    html += "<br>"
+                }
+            );
     
             html += "</td><td style='padding: 6px;'>";
     

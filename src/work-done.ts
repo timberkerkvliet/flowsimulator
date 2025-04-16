@@ -1,12 +1,12 @@
 import { average, sum } from "../node_modules/simple-statistics/index";
-import { BatchOfWork } from "./batch-of-work"
+import { UnitOfWork } from "./unit-of-work"
 import { PositiveInteger } from "./positive-integer";
-import { UnitOfWork } from "./unit-of-work";
+import { Task } from "./task";
 
 class WorkDone {
     constructor(
         private readonly props: {
-            work: BatchOfWork[],
+            work: UnitOfWork[],
             time: PositiveInteger
         }
     ) {}
@@ -15,19 +15,19 @@ class WorkDone {
         return new WorkDone({...this.props, time: this.props.time.next()})
     }
 
-    public everything(): UnitOfWork[] {
-        return this.props.work.reduce((acc, val) => acc.concat(val.unitsOfWork), [])
+    public everything(): Task[] {
+        return this.props.work.reduce((acc, val) => acc.concat(val.tasks), [])
     }
 
-    public add(batchesOfWork: BatchOfWork[]) {
+    public add(units: UnitOfWork[]) {
         let work = this.props.work;
-        const existingIds = work.map(batch => batch.id);
-        const newBatches = batchesOfWork.filter(batch => !existingIds.includes(batch.id))
+        const existingIds = work.map(unit => unit.id);
+        const newUnits = units.filter(unit => !existingIds.includes(unit.id))
 
         return new WorkDone(
             {
                 ...this.props,
-                work: [...newBatches, ...work]
+                work: [...newUnits, ...work]
             }
         )
     }
@@ -42,11 +42,11 @@ class WorkDone {
     }
 
     public throughPut(): number {
-        return sum(this.props.work.map(batch => batch.size.value))/this.props.time.value * 10;
+        return sum(this.props.work.map(unit => unit.size.value))/this.props.time.value * 10;
     }
 
     public utilization(): number {
-        return sum(this.props.work.map(batch => batch.utilization))/this.props.time.value;
+        return sum(this.props.work.map(unit => unit.utilization))/this.props.time.value;
     }
 
 }

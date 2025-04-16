@@ -20,6 +20,10 @@ class PositiveInteger {
         return new PositiveInteger(this.value + value.value);
     }
 
+    public multiply(value: PositiveInteger) {
+        return new PositiveInteger(this.value * value.value);
+    }
+
     public minus(value: PositiveInteger) {
         return new PositiveInteger(this.value - value.value);
     }

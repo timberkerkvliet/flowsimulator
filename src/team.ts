@@ -1,4 +1,3 @@
-import { BatchOfWork } from "./batch-of-work"
 import { PositiveInteger } from "./positive-integer"
 import { Strategy } from "./strategy";
 import { WorkAssignments } from "./work-assignment";
@@ -65,7 +64,8 @@ class Team {
         let backlog = this.props.backlog;
 
         workingOn = workingOn.progress(time);
-        done = done.add(workingOn.batchesDone);
+        done = done.add(workingOn.unitsDone);
+
         ({ assignments: workingOn, backlog }  = this.props.strategy.execute(
             workingOn,
             backlog,

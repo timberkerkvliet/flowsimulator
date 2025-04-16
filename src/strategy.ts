@@ -1,13 +1,11 @@
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
-import { WorkAssignment, WorkAssignments } from "./work-assignment";
+import { WorkAssignments } from "./work-assignment";
 import { Backlog } from "./backlog";
-import { equalIntervalBreaks, min } from "simple-statistics";
 
 type StrategyExecutionResult = {
     assignments: WorkAssignments,
-    backlog: Backlog,
-    success: boolean
+    backlog: Backlog
 }
 
 type AssignOption = {
@@ -100,11 +98,18 @@ class Strategy {
     ): StrategyExecutionResult {
         let result = current.unassignAll();
 
+        backlog = backlog.ensureSize(this.props.batchSize.multiply(this.props.wipLimit));
+
         let tempBacklog = backlog;
-        while (result.numberInProgress.lessThan(this.props.wipLimit)) {
-            const newBatch = new BatchOfWork(tempBacklog.topOfBacklog(this.props.batchSize));
-            tempBacklog = tempBacklog.remove(newBatch.unitsOfWork, teamSize);
-            result = result.addBatch(newBatch);
+
+        const space = this.props.wipLimit.minus(result.numberInProgress);
+
+        for (let k = 0; k < space.value; k++) {
+            console.log(this.props.batchSize)
+            const units = tempBacklog.topOfBacklog(this.props.batchSize);
+            console.log(units);
+            tempBacklog = tempBacklog.remove(units);
+            result = result.addBatch(new BatchOfWork(units));
         }
 
         let candidates = result.assignments
@@ -123,8 +128,7 @@ class Strategy {
 
         return {
             assignments: result,
-            backlog: backlog.remove(result.unitsOfWork, teamSize),
-            success: true
+            backlog: backlog.remove(result.unitsOfWork)
         };
     }
 }

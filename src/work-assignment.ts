@@ -1,5 +1,6 @@
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
+import { Task } from "./task";
 import { UnitOfWork } from "./unit-of-work";
 
 
@@ -155,6 +156,14 @@ class WorkAssignments {
         return this.assignments
             .map(assignment => assignment.batch)
             .filter(batch => batch.isDone);
+    }
+
+    public get unitsDone(): UnitOfWork[] {
+        return this.assignments
+            .map(assignment => assignment.batch)
+            .filter(batch => batch.isDone)
+            .map(batch => batch.unitsOfWork)
+            .reduce((acc, val) => acc.concat(val), []);       
     }
 
     start(time: PositiveInteger): WorkAssignments {
