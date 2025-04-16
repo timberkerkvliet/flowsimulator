@@ -67,11 +67,11 @@ class Renderer {
     private renderProgress(team: Team) {
         let html = `
             <h2>In Progress</h2>
-            <table id="inProgressTable" style="border-collapse: collapse; width: 100%;">
+            <table id="inProgressTable">
                 <thead>
                     <tr>
-                        <th style="text-align: left; padding: 6px;">Batch</th>
-                        <th style="text-align: left; padding: 6px;">Assigned</th>
+                        <th>Batch</th>
+                        <th>Assigned</th>
                     </tr>
                 </thead>
                 <tbody>

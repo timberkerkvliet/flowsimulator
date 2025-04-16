@@ -16,6 +16,7 @@ const randomSeedElement = document.getElementById('randomSeed') as HTMLInputElem
 const collaborationEfficiencyElement = document.getElementById('collaborationEfficiency') as HTMLInputElement;
 const speedElement = document.getElementById('speed') as HTMLInputElement;
 
+const unitSizeElement = document.getElementById('unitSize') as HTMLInputElement;
 const batchSizeElement = document.getElementById('batchSize') as HTMLInputElement;
 const wipLimitElement = document.getElementById('wipLimit') as HTMLInputElement;
 
@@ -62,7 +63,7 @@ async function clickButton() {
         {
             randomSeed: seedrandom(randomSeedElement.value),
             togetherFactor: parseFloat(collaborationEfficiencyElement.value)/10,
-            unitSize: PositiveInteger.fromNumber(2),
+            unitSize: PositiveInteger.fromNumber(parseFloat(unitSizeElement.value)),
             teamSize
         }
     );

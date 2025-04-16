@@ -27,7 +27,7 @@
     }
 
     .column {
-      flex: 1;
+      flex: 2;
       border: 2px dotted #aaa;
       border-radius: 8px;
       padding: 1rem;
@@ -44,28 +44,34 @@
       text-transform: capitalize;
     }
 
+    #inprogress {
+        flex: 3;
+    }
+
     #inProgressTable {
-  width: 100%;
-  border-collapse: collapse;
-  
-  margin-top: 1rem;
-  font-size: 0.95rem;
-}
+        width: 100%;
+        border-collapse: collapse;
+        
+        margin-top: 1rem;
+        font-size: 0.95rem;
+    }
 
-#inProgressTable th,
-#inProgressTable td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: center;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
+    #inProgressTable th,
+    #inProgressTable td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        text-align: center;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
 
-#inProgressTable th {
-  background-color: #eaf4fc;
-  color: #2c3e50;
-}
-#readme {
+    #inProgressTable th {
+        background-color: #eaf4fc;
+        color: #2c3e50;
+        text-align: center;
+    }
+
+    #readme {
       border-top: 1px solid #ccc;
       padding-top: 2rem;
       max-width: 600px;
@@ -81,7 +87,6 @@
         border: 1px solid grey;
         font-family: monospace;
     }
-
 
     #panel {
       border-top: 1px solid #ccc;
@@ -132,26 +137,6 @@
       margin: 0.3rem 0;
     }
 
-    details {
-      background: #f0f8ff;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 3rem;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    summary {
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-
-    details p, details li {
-      line-height: 1.6;
-    }
-
     ul {
       padding-left: 1.5rem;
     }
@@ -189,6 +174,9 @@
 
     <label for="collaborationEfficiency">Collaboration efficiency</label>
     <input type="range" id="collaborationEfficiency" value="8" max="10" min="0">
+
+    <label for="batchSize">Unit size</label>
+    <input type="text" id="unitSize" value="3">
 
     <label for="batchSize">Batch size</label>
     <input type="text" id="batchSize" value="4">
