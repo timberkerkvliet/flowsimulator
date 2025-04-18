@@ -45,7 +45,7 @@ class Renderer {
                         const color = task.isDone() ? 'black' : getColorForNumber(task.needsMember.value);
                         html += `
                             <span
-                                class="unitOfWork" style="color: ${color}; border-color: ${color}">
+                                class="task" style="color: ${color}; border-color: ${color}">
                                 ${task.id.charAt(0)}
                             </span>
                         `;
@@ -61,7 +61,7 @@ class Renderer {
     private renderProgress(team: Team) {
         let html = `
             <h2>In Progress</h2>
-            <table id="inProgressTable">
+            <table class="in-progress-table">
                 <thead>
                     <tr>
                         <th>Batch</th>
@@ -81,7 +81,7 @@ class Renderer {
                             const color = task.isDone() ? 'black' : getColorForNumber(task.needsMember.value);
                             html += `
                                 <span
-                                    class="unitOfWork" style="color: ${color}; border-color: ${color}">
+                                    class="task" style="color: ${color}; border-color: ${color}">
                                     ${task.id.charAt(0)}
                                 </span>
                             `;

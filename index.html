@@ -44,15 +44,11 @@
       text-transform: capitalize;
     }
 
-    #inprogress {
+    .column.in-progress {
         flex: 3;
     }
 
-    #inprogress-2 {
-        flex: 3;
-    }
-
-    #inProgressTable {
+    .in-progress-table {
         width: 100%;
         border-collapse: collapse;
         
@@ -60,8 +56,8 @@
         font-size: 0.95rem;
     }
 
-    #inProgressTable th,
-    #inProgressTable td {
+    .in-progress-table th,
+    .in-progress-table td {
         border: 1px solid #ccc;
         padding: 0.5rem;
         text-align: center;
@@ -69,7 +65,7 @@
         overflow-wrap: break-word;
     }
 
-    #inProgressTable th {
+    .in-progress-table th {
         background-color: #eaf4fc;
         color: #2c3e50;
         text-align: center;
@@ -82,7 +78,7 @@
       margin: 0 auto;
     }
 
-    .unitOfWork {
+    .task {
         display: inline-block;
         margin-right: 6px;
         margin-bottom: 6px;
@@ -154,7 +150,7 @@
     <div class="column" id="backlog">
       <h2>backlog</h2>
     </div>
-    <div class="column" id="inprogress">
+    <div class="column in-progress" id="inprogress">
       <h2>in progress</h2>
     </div>
     <div class="column" id="stats">
@@ -171,7 +167,7 @@
     <div class="column" id="backlog-2">
       <h2>backlog</h2>
     </div>
-    <div class="column" id="inprogress-2">
+    <div class="column in-progress" id="inprogress-2">
       <h2>in progress</h2>
     </div>
     <div class="column" id="stats-2">
