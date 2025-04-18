@@ -122,22 +122,28 @@ async function clickButton() {
     )
 
     const runner = new SimulationRunner(
-        team,
-        new Renderer(
-            document.getElementById('backlog'),
-            document.getElementById('inprogress'),
-            document.getElementById('cycletime'),
-            document.getElementById('throughput'),
-            document.getElementById('utilization')
-        ),
-        team2,
-        new Renderer(
-            document.getElementById('backlog-2'),
-            document.getElementById('inprogress-2'),
-            document.getElementById('cycletime-2'),
-            document.getElementById('throughput-2'),
-            document.getElementById('utilization-2')
-        ),
+        [
+            {
+                team: team,
+                renderer: new Renderer(
+                    document.getElementById('backlog'),
+                    document.getElementById('inprogress'),
+                    document.getElementById('cycletime'),
+                    document.getElementById('throughput'),
+                    document.getElementById('utilization')
+                )
+            },
+            {
+                team: team2,
+                renderer: new Renderer(
+                    document.getElementById('backlog-2'),
+                    document.getElementById('inprogress-2'),
+                    document.getElementById('cycletime-2'),
+                    document.getElementById('throughput-2'),
+                    document.getElementById('utilization-2')
+                )
+            }
+        ],
         sleepTime,
         false
     );
