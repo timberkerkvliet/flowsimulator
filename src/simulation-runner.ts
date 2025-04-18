@@ -3,12 +3,38 @@ import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer"
 import { Team } from "./team";
 import { Strategy } from "./strategy";
-
+import { TeamSimulationSettings } from "./simulation-settings";
+import { Backlog } from "./backlog";
+import seedrandom from 'seedrandom';
 
 type TeamSimulation = {
     team: Team,
     renderer: Renderer
 }
+
+
+function getTeamFromSettings(settings: TeamSimulationSettings): Team {
+    return Team.new(
+        Backlog.newBacklog(
+            new UnitOfWorkFactory(
+                {
+                    randomSeed: seedrandom(settings.randomSeed),
+                    togetherFactor: settings.collaborationEfficiency,
+                    unitSize: settings.unitSize,
+                    teamSize: settings.teamSize
+                }
+            )
+        ),
+        new Strategy(
+            {
+                batchSize: settings.batchSize,
+                wipLimit: settings.wipLimit
+            }
+        ),
+        settings.teamSize
+    )
+}
+
 
 class SimulationRunner {
     constructor(
@@ -38,4 +64,4 @@ class SimulationRunner {
 
 }
 
-export { SimulationRunner }
+export { SimulationRunner, getTeamFromSettings }
