@@ -20,20 +20,14 @@ function getColorForNumber(n: number): string {
 
 
 class Renderer {
-    private backlog: HTMLElement;
-    private inProgress: HTMLElement;
-    private done: HTMLElement;
-    private cycleTime: HTMLElement;
-    private throughput: HTMLElement;
-    private utilization: HTMLElement;
-
-    constructor() {
-        this.backlog = document.getElementById('backlog');
-        this.inProgress = document.getElementById('inprogress');
-        this.done = document.getElementById('done');
-        this.cycleTime = document.getElementById('cycletime');
-        this.throughput = document.getElementById('throughput');
-        this.utilization = document.getElementById('utilization');
+    constructor(
+        private backlog: HTMLElement,
+        private inProgress: HTMLElement,
+        private cycleTime: HTMLElement,
+        private throughput: HTMLElement,
+        private utilization: HTMLElement
+    ) {
+        
     }
 
     render(team: Team) {
