@@ -58,4 +58,26 @@ const wipLimitsWillHit = {
     ]
 }
 
-export { SimulationSettings, TeamSimulationSettings, theMechanism, wipLimitsWillHit }
+const wipLimitTradeOff = {
+    sleepTime: 40,
+    teamSimulationsSettings: [
+        {
+            teamSize: PositiveInteger.fromNumber(4),
+            randomSeed: 'fuchsia',
+            unitSize: PositiveInteger.fromNumber(2),
+            batchSize: PositiveInteger.fromNumber(2),
+            wipLimit: PositiveInteger.fromNumber(2),
+            collaborationEfficiency: 0.7
+        },
+        {
+            teamSize: PositiveInteger.fromNumber(4),
+            randomSeed: 'fuchsia',
+            unitSize: PositiveInteger.fromNumber(2),
+            batchSize: PositiveInteger.fromNumber(2),
+            wipLimit: PositiveInteger.fromNumber(10),
+            collaborationEfficiency: 0.7
+        }
+    ]
+}
+
+export { SimulationSettings, TeamSimulationSettings, theMechanism, wipLimitsWillHit, wipLimitTradeOff }
