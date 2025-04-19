@@ -108,9 +108,7 @@ class Strategy {
         const space = this.props.wipLimit.minus(result.numberInProgress);
 
         for (let k = 0; k < space.value; k++) {
-            console.log(this.props.batchSize)
             const units = tempBacklog.topOfBacklog(this.props.batchSize);
-            console.log(units);
             tempBacklog = tempBacklog.remove(units);
             result = result.addBatch(new BatchOfWork(units));
         }

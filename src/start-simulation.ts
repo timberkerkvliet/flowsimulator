@@ -5,8 +5,8 @@ import { getTeamFromSettings, SimulationRunner } from "./simulation-runner"
 import { SimulationSettings } from "./simulation-settings";
 
 const button = document.getElementById('startButton');
-const speedElement = document.getElementById('speed') as HTMLInputElement;
 
+const speedElement = document.getElementById('speed') as HTMLInputElement;
 const teamSizeElement = document.getElementById('teamSize') as HTMLInputElement;
 const randomSeedElement = document.getElementById('randomSeed') as HTMLInputElement;
 const collaborationEfficiencyElement = document.getElementById('collaborationEfficiency') as HTMLInputElement;
@@ -20,6 +20,22 @@ const collaborationEfficiencyElement2 = document.getElementById('collaborationEf
 const unitSizeElement2 = document.getElementById('unitSize-2') as HTMLInputElement;
 const batchSizeElement2 = document.getElementById('batchSize-2') as HTMLInputElement;
 const wipLimitElement2 = document.getElementById('wipLimit-2') as HTMLInputElement;
+
+const allInputs = [
+    speedElement,
+    teamSizeElement,
+    teamSizeElement2,
+    randomSeedElement,
+    randomSeedElement2,
+    collaborationEfficiencyElement,
+    collaborationEfficiencyElement2,
+    unitSizeElement,
+    unitSizeElement2,
+    batchSizeElement,
+    batchSizeElement2,
+    wipLimitElement,
+    wipLimitElement2
+]
 
 class SimulationState {
     public static runner: SimulationRunner | undefined;
@@ -49,15 +65,44 @@ function parseSettings(): SimulationSettings {
     }
 }
 
-async function clickButton() {
-    button.textContent = "Restart simulation";
+function formatSettings(settings: SimulationSettings) {
+    speedElement.value = (5000/settings.sleepTime - 1).toString();
 
-    const settings = parseSettings();
+    teamSizeElement.value = settings.teamSimulationsSettings[0].teamSize.value.toString();
+    teamSizeElement2.value = settings.teamSimulationsSettings[1].teamSize.value.toString();
 
-    if (SimulationState.runner !== undefined) {
-        SimulationState.runner.stop();
+    randomSeedElement.value = settings.teamSimulationsSettings[0].randomSeed.toString();
+    randomSeedElement2.value = settings.teamSimulationsSettings[1].randomSeed.toString();
+
+    collaborationEfficiencyElement.value = settings.teamSimulationsSettings[0].collaborationEfficiency.toString();
+    collaborationEfficiencyElement2.value = settings.teamSimulationsSettings[1].collaborationEfficiency.toString();
+
+    unitSizeElement.value = settings.teamSimulationsSettings[0].unitSize.value.toString();
+    unitSizeElement2.value = settings.teamSimulationsSettings[1].unitSize.value.toString();
+
+    batchSizeElement.value = settings.teamSimulationsSettings[0].batchSize.value.toString();
+    batchSizeElement2.value = settings.teamSimulationsSettings[1].batchSize.value.toString();
+
+    wipLimitElement.value = settings.teamSimulationsSettings[0].batchSize.value.toString();
+    wipLimitElement2.value = settings.teamSimulationsSettings[1].batchSize.value.toString();
+}
+
+function disableInputs() {
+    for (const element of allInputs) {
+        element.disabled = true;
     }
-    
+}
+
+function enableInputs() {
+    for (const element of allInputs) {
+        element.disabled = false;
+    }
+}
+
+async function runSimulation(settings: SimulationSettings) {
+    disableInputs();
+    formatSettings(settings);
+
     const team = getTeamFromSettings(settings.teamSimulationsSettings[0]);
     const team2 = getTeamFromSettings(settings.teamSimulationsSettings[1]);
 
@@ -89,7 +134,28 @@ async function clickButton() {
     );
 
     SimulationState.runner = runner;
+
+    button.textContent = "Stop simulation"
+    
     await runner.run();
+}
+
+function stopSimulation() {
+    SimulationState.runner.stop();
+    SimulationState.runner = undefined;
+    enableInputs();
+    button.textContent = "Start simulation"
+}
+
+async function clickButton() {
+
+    if (SimulationState.runner !== undefined) {
+        stopSimulation();
+        return;
+    }
+
+    const settings = parseSettings();
+    await runSimulation(settings);
 }
 
 button.addEventListener('click', clickButton);
