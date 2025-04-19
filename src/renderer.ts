@@ -33,7 +33,7 @@ class Renderer {
     render(team: Team) {
         this.renderBacklog(team.backlog());
         this.renderProgress(team);
-        this.renderStats(team.workDone(), team.size.value);
+        this.renderStats(team, team.size.value);
     }
 
     private renderBacklog(workOnBacklog: Backlog) {
@@ -123,11 +123,12 @@ class Renderer {
         this.inProgress.innerHTML = html;
     }
     
-    private renderStats(workDone: WorkDone, teamSize: number) {
+    private renderStats(team: Team, teamSize: number) {
+        const workDone = team.workDone();
         const throughPut = workDone.throughPut();
         this.cycleTime.innerHTML = workDone.averageCycleTime().toFixed(3);
         this.throughput.innerHTML = throughPut.toFixed(3);
-        this.utilization.innerHTML = (workDone.utilization()*100/teamSize).toFixed(1) + "%"
+        this.utilization.innerHTML = (team.utilization()*100/teamSize).toFixed(1) + "%"
         
     }
 

@@ -1,3 +1,4 @@
+import { sum } from "simple-statistics";
 import { PositiveInteger } from "./positive-integer";
 import { UnitOfWork } from "./unit-of-work";
 
@@ -7,12 +8,6 @@ class BatchOfWork {
 
     public get isDone(): boolean {
         return this.unitsOfWork.map(unit => unit.isDone).every(x => x);
-    }
-
-    start(time: PositiveInteger): BatchOfWork {
-        return new BatchOfWork(
-            this.unitsOfWork.map(unit => unit.start(time))
-        );
     }
 
     public get hasStarted(): boolean {
@@ -39,8 +34,23 @@ class BatchOfWork {
         return this.unitsOfWork.filter(unit => unit.canCollaborate).length > 0;
     }
 
+    public get utilization(): number {
+        return sum(this.unitsOfWork.map(unit => unit.utilization))
+    }
+
+    private start(time: PositiveInteger): BatchOfWork {
+        return new BatchOfWork(
+            this.unitsOfWork.map(unit => unit.start(time))
+        );
+    }
+
     progress(time: PositiveInteger, assigness: PositiveInteger[]): BatchOfWork {
-        const units = this.unitsOfWork;
+        let result: BatchOfWork = this;
+        if (!this.hasStarted) {
+            result = result.start(time);
+        }
+
+        const units = result.unitsOfWork;
         const notDoneIndex = units.findIndex(unit => unit.canBeProgressedBy(assigness))
 
         if (assigness.length > 0 && notDoneIndex === -1) {

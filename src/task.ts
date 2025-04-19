@@ -71,6 +71,7 @@ class Task {
         }
  
         let timeDone = undefined;
+        let timeStart = this.props.timeStart;
         let utilization = this.props.utilization;
 
         let s = 0;
@@ -80,11 +81,15 @@ class Task {
             utilization += this.props.togetherFactor**k
         }
 
-        if (this.randomSeed() <= s) {
+        if (timeStart !==undefined && this.randomSeed() <= s) {
             timeDone = time;
         }
 
-        return new Task({...this.props, utilization, timeDone})
+        if (timeStart === undefined) {
+            timeStart = time;
+        }
+
+        return new Task({...this.props, utilization, timeStart, timeDone})
     }
 
     public hasStarted(): boolean {

@@ -3,6 +3,7 @@ import { Strategy } from "./strategy";
 import { WorkAssignments } from "./work-assignment";
 import { WorkDone } from "./work-done";
 import { Backlog } from "./backlog";
+import { sum } from "simple-statistics";
 
 class Team {
     constructor(
@@ -21,8 +22,8 @@ class Team {
             {
                 backlog: backlog,
                 workingOn: new WorkAssignments({assignments: []}),
-                done: new WorkDone({work: [], time: PositiveInteger.fromNumber(1)}),
-                currentTime: PositiveInteger.fromNumber(1),
+                done: new WorkDone({work: [], time: PositiveInteger.fromNumber(0)}),
+                currentTime: PositiveInteger.fromNumber(0),
                 strategy: strategy,
                 teamSize: size
             }
@@ -57,21 +58,38 @@ class Team {
         return this.props.done;
     }
 
+    public utilizationA(): number {
+        const total = this.props.done.utilization()
+        
+        return total/this.props.currentTime.value;
+    }
+
+    public utilizationB(): number {
+        const total = sum(this.props.workingOn.inProgress.map(x => x.utilization))
+        
+        return total/this.props.currentTime.value;
+    }
+
+    public utilization(): number {
+        const total = sum(this.props.workingOn.inProgress.map(x => x.utilization)) + this.props.done.utilization()
+        
+        return total/this.props.currentTime.value;
+    }
+
+
     public tick(): Team {
         const time = this.props.currentTime;
         let done = this.props.done;
         let workingOn = this.props.workingOn;
         let backlog = this.props.backlog;
 
-        workingOn = workingOn.progress(time);
-        done = done.add(workingOn.unitsDone);
-
         ({ assignments: workingOn, backlog }  = this.props.strategy.execute(
             workingOn,
             backlog,
             this.props.teamSize
         ));
-        workingOn = workingOn.start(time);
+        workingOn = workingOn.progress(time);
+        done = done.add(workingOn.unitsDone);
 
         return new Team(
             {

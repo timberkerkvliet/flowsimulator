@@ -38,15 +38,6 @@ class WorkAssignment {
         )
     }
 
-    start(time: PositiveInteger): WorkAssignment {
-        return new WorkAssignment(
-            {
-                ...this.props,
-                batch: this.batch.start(time)
-            }
-        )
-    }
-
     progress(time: PositiveInteger): WorkAssignment {
         return new WorkAssignment(
             {
@@ -73,6 +64,12 @@ class WorkAssignments {
                 .filter(assignment => !assignment.batch.isDone)
                 .length
         );
+    }
+
+    public get inProgress(): BatchOfWork[] {
+        return this.assignments
+            .filter(assignment => !assignment.batch.isDone)
+            .map(assignment => assignment.batch)
     }
 
     public get unitsOfWork(): UnitOfWork[] {
@@ -164,15 +161,6 @@ class WorkAssignments {
             .filter(batch => batch.isDone)
             .map(batch => batch.unitsOfWork)
             .reduce((acc, val) => acc.concat(val), []);       
-    }
-
-    start(time: PositiveInteger): WorkAssignments {
-        return new WorkAssignments(
-            {
-                assignments: this.assignments
-                .map(assignment => assignment.batch.hasStarted ? assignment : assignment.start(time))
-            }
-        )
     }
 
     progress(time: PositiveInteger): WorkAssignments {

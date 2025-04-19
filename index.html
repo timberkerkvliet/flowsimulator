@@ -280,9 +280,27 @@
 
     <p>
       This simulation runs a team with no collaboration efficiency and one with maximum collaboration efficiency on low speed.
+      In the first team there will be no pairing or mobbing, since that does not has any effect. As a result, not every one is assigned
+      to a task all the time. There is not always a batch of work available with a task that needs that member.
+      The utilization in the first team will drop quite a bit below 100% as a result. In the second team, the utilization will stay at 100%.
     </p>
 
     <button id="theMechanism">Run it!</button>
+
+    <h3>WIP limits are always going to be hit</h3>
+
+    <p>
+      One of the interesting things about WIP limits is that they will aways hit, no matter how high you set them.
+      Or, another way to put it: in progress queues will grow indefinetly without WIP limits.
+    </p>
+
+    <p>
+      This simulation shows two identical teams with a WIP limit of 20, with two different random seeds.
+      As you can observe, the in progress queues will grow until it hits the WIP limit.
+      This is because one or more the team members bottlenecks the team and then the other members will add more WIP to keep themselves busy.
+    </p>
+
+    <button id="wipLimitsWillHit">Run it!</button>
 
 </div>
   

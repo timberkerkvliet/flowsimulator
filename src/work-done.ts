@@ -19,6 +19,10 @@ class WorkDone {
         return this.props.work.reduce((acc, val) => acc.concat(val.tasks), [])
     }
 
+    public units(): UnitOfWork[] {
+        return this.props.work;
+    }
+
     public add(units: UnitOfWork[]) {
         let work = this.props.work;
         const existingIds = work.map(unit => unit.id);
@@ -46,7 +50,7 @@ class WorkDone {
     }
 
     public utilization(): number {
-        return sum(this.props.work.map(unit => unit.utilization))/this.props.time.value;
+        return sum(this.props.work.map(unit => unit.utilization));
     }
 
 }

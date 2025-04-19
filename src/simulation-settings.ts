@@ -36,26 +36,26 @@ const theMechanism = {
     ]
 }
 
-const wipEffect = {
+const wipLimitsWillHit = {
     sleepTime: 100,
     teamSimulationsSettings: [
         {
             teamSize: PositiveInteger.fromNumber(4),
-            randomSeed: 'fuchsia',
+            randomSeed: 'black',
             unitSize: PositiveInteger.fromNumber(2),
             batchSize: PositiveInteger.fromNumber(2),
-            wipLimit: PositiveInteger.fromNumber(1),
+            wipLimit: PositiveInteger.fromNumber(20),
             collaborationEfficiency: 0.8
         },
         {
             teamSize: PositiveInteger.fromNumber(4),
-            randomSeed: 'fuchsia',
+            randomSeed: 'white',
             unitSize: PositiveInteger.fromNumber(2),
             batchSize: PositiveInteger.fromNumber(2),
-            wipLimit: PositiveInteger.fromNumber(10),
+            wipLimit: PositiveInteger.fromNumber(20),
             collaborationEfficiency: 0.8
         }
     ]
 }
 
-export { SimulationSettings, TeamSimulationSettings, theMechanism, wipEffect }
+export { SimulationSettings, TeamSimulationSettings, theMechanism, wipLimitsWillHit }

@@ -2,7 +2,7 @@
 import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer";
 import { getTeamFromSettings, SimulationRunner } from "./simulation-runner"
-import { SimulationSettings, theMechanism, wipEffect } from "./simulation-settings";
+import { SimulationSettings, theMechanism, wipLimitsWillHit } from "./simulation-settings";
 
 const button = document.getElementById('startButton');
 
@@ -164,3 +164,4 @@ async function clickButton() {
 button.addEventListener('click', clickButton);
 
 document.getElementById('theMechanism').addEventListener('click', () => runSimulation(theMechanism));
+document.getElementById('wipLimitsWillHit').addEventListener('click', () => runSimulation(wipLimitsWillHit));

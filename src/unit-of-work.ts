@@ -5,13 +5,17 @@ import { Task } from "./task"
 class UnitOfWork {
     constructor(public readonly tasks: Task[]) {}
 
-    start(time: PositiveInteger): UnitOfWork {
+    public start(time: PositiveInteger): UnitOfWork {
         return new UnitOfWork(
-            this.tasks.map(unit => unit.start(time))
+            this.tasks.map(task => task.start(time))
         );
     }
 
     progress(time: PositiveInteger, assigness: PositiveInteger[]): UnitOfWork {
+        if (!this.hasStarted) {
+            this.start(time);
+        }
+
         const tasks = this.tasks;
         const notDoneIndex = tasks.findIndex(unit => unit.canBeProgressedBy(assigness))
 
@@ -45,7 +49,7 @@ class UnitOfWork {
     }
 
     public get id(): string {
-        return this.tasks.map(unit => unit.id).join("-");
+        return this.tasks.map(task => task.id).join("-");
     }
 
     public get timeDone(): PositiveInteger {
@@ -61,7 +65,7 @@ class UnitOfWork {
     }
 
     public get isDone(): boolean {
-        return this.tasks.map(unit => unit.isDone()).every(x => x);
+        return this.tasks.map(task => task.isDone()).every(x => x);
     }
 
     public get hasStarted(): boolean {
