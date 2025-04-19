@@ -60,7 +60,6 @@ class SimulationRunner {
             this.teamSimulations.forEach(simulation => simulation.renderer.render(simulation.team));
             await new Promise(resolve => setTimeout(resolve, this.sleepTime));
         }
-        this.teamSimulations.forEach(simulation => simulation.renderer.clear());
     }
 
 }

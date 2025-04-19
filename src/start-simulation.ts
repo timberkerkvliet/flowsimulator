@@ -2,7 +2,7 @@
 import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer";
 import { getTeamFromSettings, SimulationRunner } from "./simulation-runner"
-import { SimulationSettings } from "./simulation-settings";
+import { SimulationSettings, theMechanism, wipEffect } from "./simulation-settings";
 
 const button = document.getElementById('startButton');
 
@@ -47,7 +47,7 @@ function parseSettings(): SimulationSettings {
             {
                 teamSize: PositiveInteger.fromNumber(parseFloat(teamSizeElement.value)),
                 randomSeed: randomSeedElement.value,
-                collaborationEfficiency: parseFloat(collaborationEfficiencyElement.value),
+                collaborationEfficiency: parseFloat(collaborationEfficiencyElement.value) / 10,
                 unitSize: PositiveInteger.fromNumber(parseFloat(unitSizeElement.value)),
                 batchSize: PositiveInteger.fromNumber(parseFloat(batchSizeElement.value)),
                 wipLimit: PositiveInteger.fromNumber(parseFloat(wipLimitElement.value))
@@ -55,7 +55,7 @@ function parseSettings(): SimulationSettings {
             {
                 teamSize: PositiveInteger.fromNumber(parseFloat(teamSizeElement2.value)),
                 randomSeed: randomSeedElement2.value,
-                collaborationEfficiency: parseFloat(collaborationEfficiencyElement2.value),
+                collaborationEfficiency: parseFloat(collaborationEfficiencyElement2.value) / 10,
                 unitSize: PositiveInteger.fromNumber(parseFloat(unitSizeElement2.value)),
                 batchSize: PositiveInteger.fromNumber(parseFloat(batchSizeElement2.value)),
                 wipLimit: PositiveInteger.fromNumber(parseFloat(wipLimitElement2.value))
@@ -74,8 +74,8 @@ function formatSettings(settings: SimulationSettings) {
     randomSeedElement.value = settings.teamSimulationsSettings[0].randomSeed.toString();
     randomSeedElement2.value = settings.teamSimulationsSettings[1].randomSeed.toString();
 
-    collaborationEfficiencyElement.value = settings.teamSimulationsSettings[0].collaborationEfficiency.toString();
-    collaborationEfficiencyElement2.value = settings.teamSimulationsSettings[1].collaborationEfficiency.toString();
+    collaborationEfficiencyElement.value = (settings.teamSimulationsSettings[0].collaborationEfficiency * 10).toString();
+    collaborationEfficiencyElement2.value = (settings.teamSimulationsSettings[1].collaborationEfficiency * 10).toString();
 
     unitSizeElement.value = settings.teamSimulationsSettings[0].unitSize.value.toString();
     unitSizeElement2.value = settings.teamSimulationsSettings[1].unitSize.value.toString();
@@ -83,8 +83,8 @@ function formatSettings(settings: SimulationSettings) {
     batchSizeElement.value = settings.teamSimulationsSettings[0].batchSize.value.toString();
     batchSizeElement2.value = settings.teamSimulationsSettings[1].batchSize.value.toString();
 
-    wipLimitElement.value = settings.teamSimulationsSettings[0].batchSize.value.toString();
-    wipLimitElement2.value = settings.teamSimulationsSettings[1].batchSize.value.toString();
+    wipLimitElement.value = settings.teamSimulationsSettings[0].wipLimit.value.toString();
+    wipLimitElement2.value = settings.teamSimulationsSettings[1].wipLimit.value.toString();
 }
 
 function disableInputs() {
@@ -100,8 +100,9 @@ function enableInputs() {
 }
 
 async function runSimulation(settings: SimulationSettings) {
-    disableInputs();
+    stopSimulation();
     formatSettings(settings);
+    disableInputs();
 
     const team = getTeamFromSettings(settings.teamSimulationsSettings[0]);
     const team2 = getTeamFromSettings(settings.teamSimulationsSettings[1]);
@@ -141,6 +142,9 @@ async function runSimulation(settings: SimulationSettings) {
 }
 
 function stopSimulation() {
+    if (SimulationState.runner === undefined) {
+        return;
+    }
     SimulationState.runner.stop();
     SimulationState.runner = undefined;
     enableInputs();
@@ -148,7 +152,6 @@ function stopSimulation() {
 }
 
 async function clickButton() {
-
     if (SimulationState.runner !== undefined) {
         stopSimulation();
         return;
@@ -159,3 +162,5 @@ async function clickButton() {
 }
 
 button.addEventListener('click', clickButton);
+
+document.getElementById('theMechanism').addEventListener('click', () => runSimulation(theMechanism));
