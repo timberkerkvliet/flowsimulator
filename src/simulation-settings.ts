@@ -23,15 +23,15 @@ const theMechanism = {
             unitSize: PositiveInteger.fromNumber(2),
             batchSize: PositiveInteger.fromNumber(2),
             wipLimit: PositiveInteger.fromNumber(4),
-            collaborationEfficiency: 0
+            collaborationEfficiency: 0.7
         },
         {
             teamSize: PositiveInteger.fromNumber(4),
-            randomSeed: 'fuchsia',
+            randomSeed: 'limegreen',
             unitSize: PositiveInteger.fromNumber(2),
             batchSize: PositiveInteger.fromNumber(2),
             wipLimit: PositiveInteger.fromNumber(4),
-            collaborationEfficiency: 1
+            collaborationEfficiency: 0.7
         }
     ]
 }
@@ -66,18 +66,47 @@ const wipLimitTradeOff = {
             randomSeed: 'fuchsia',
             unitSize: PositiveInteger.fromNumber(2),
             batchSize: PositiveInteger.fromNumber(2),
-            wipLimit: PositiveInteger.fromNumber(2),
-            collaborationEfficiency: 0.7
+            wipLimit: PositiveInteger.fromNumber(4),
+            collaborationEfficiency: 0
         },
         {
             teamSize: PositiveInteger.fromNumber(4),
             randomSeed: 'fuchsia',
             unitSize: PositiveInteger.fromNumber(2),
             batchSize: PositiveInteger.fromNumber(2),
-            wipLimit: PositiveInteger.fromNumber(10),
+            wipLimit: PositiveInteger.fromNumber(12),
+            collaborationEfficiency: 0
+        }
+    ]
+}
+
+const collaboration = {
+    sleepTime: 40,
+    teamSimulationsSettings: [
+        {
+            teamSize: PositiveInteger.fromNumber(4),
+            randomSeed: 'fuchsia',
+            unitSize: PositiveInteger.fromNumber(2),
+            batchSize: PositiveInteger.fromNumber(2),
+            wipLimit: PositiveInteger.fromNumber(2),
+            collaborationEfficiency: 0
+        },
+        {
+            teamSize: PositiveInteger.fromNumber(4),
+            randomSeed: 'fuchsia',
+            unitSize: PositiveInteger.fromNumber(2),
+            batchSize: PositiveInteger.fromNumber(2),
+            wipLimit: PositiveInteger.fromNumber(2),
             collaborationEfficiency: 0.7
         }
     ]
 }
 
-export { SimulationSettings, TeamSimulationSettings, theMechanism, wipLimitsWillHit, wipLimitTradeOff }
+export { 
+    SimulationSettings,
+    TeamSimulationSettings,
+    theMechanism,
+    wipLimitsWillHit,
+    wipLimitTradeOff,
+    collaboration
+}

@@ -275,14 +275,17 @@
     <p>
       Every letter you see represents a <i>task</i>—a tiny, indivisible piece of work.
       Each color tells you which team member is needed to move that task forward. And when a letter turns black? It’s done.
-      Workers are always looking for a task that needs them. They will pop work from the backlog if the WIP limits allows them.
+      Workers are always looking for a task that needs them.
+      They will pop work from the backlog if the WIP limits allows them.
+      For a team member, when there is no batch of work with a task that needs him, he will join (collaborate with) someone else.
+      The "collaboration efficiency" decides how much this helps progress that task faster.
+      The <i>unit size</i> is the minimum number of tasks that needs to be completed together to deliver some (customer) value.
+      Tasks in a unit are displayed next to each other on the backlog and in batches in progress.
+      The <i>batch size</i> is how many units the team stacks together in one batch when they are working on them.
     </p>
 
     <p>
-      This simulation runs a team with no collaboration efficiency and one with maximum collaboration efficiency on low speed.
-      In the first team there will be no pairing or mobbing, since that does not has any effect. As a result, not every one is assigned
-      to a task all the time. There is not always a batch of work available with a task that needs that member.
-      The utilization in the first team will drop quite a bit below 100% as a result. In the second team, the utilization will stay at 100%.
+      This simulations runs two identical teams on different random seeds on low speed, to illustrate how work is assigned.
     </p>
 
     <button id="theMechanism">Run it!</button>
@@ -312,20 +315,28 @@
     </p>
 
     <p>
-      This simulation shows an otherwise identical team with WIP limit 2 and WIP limit 10.
-      As you can observe, the team with WIP limit 2 has a <i>much</i> lower cycle time (about 70% reduction) and only a <i>somewhat</i> lower throughout (about 15% lower).
+      This simulation shows an otherwise identical team with WIP limit 4 and WIP limit 10.
+      Collaboration is left out of the equation here (see next part).
+      As you can observe, the team with WIP limit 4 has a ~50% lower cycle time and only a ~20% lower throughput.
     </p>
 
     <button id="wipLimitTradeOff">Run it!</button>
 
     <h3>Collaboration sweetens the deal</h3>
 
-    <button id="wipLimitTradeOff">Run it!</button>
+    <p>
+    When we add collaboration efficiency to the mix, teams with low WIP limits achieve more throughput and lower cycle times.
+    In high WIP regimes, the collaboration efficiency does not matter.
+    As a result of this effect, collaboration efficiency sweetens the WIP limit trade-off: less throughput is lost when lowering WIP limits.
+    </p>
 
-    <h3>Smaller batch sizes is free cycle time</h3>
+    <p>
+      This simulation shows two teams with WIP limit 2.
+      The first team has no collaboration efficiency and the second does 70% efficiency.
+      As you can observe, the second team does much better in both cycle times and throughput.
+    </p>
 
-    <button id="wipLimitTradeOff">Run it!</button>
-
+    <button id="collaboration">Run it!</button>
 
 </div>
   
