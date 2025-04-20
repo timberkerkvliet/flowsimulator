@@ -38,19 +38,7 @@ class Team {
         return this.props.backlog;
     }
 
-    public withStrategy(strategy: Strategy): Team {
-        return new Team({...this.props, strategy})
-    }
-
-    public withBacklog(backlog: Backlog): Team {
-        return new Team({...this.props, backlog})
-    }
-
-    public withSize(size: PositiveInteger): Team {
-        return new Team({...this.props, teamSize: size});
-    }
-
-    public workInProgress(): WorkAssignments {
+    public assignments(): WorkAssignments {
         return this.props.workingOn;
     }
 
@@ -58,24 +46,11 @@ class Team {
         return this.props.done;
     }
 
-    public utilizationA(): number {
-        const total = this.props.done.utilization()
-        
-        return total/this.props.currentTime.value;
-    }
-
-    public utilizationB(): number {
-        const total = sum(this.props.workingOn.inProgress.map(x => x.utilization))
-        
-        return total/this.props.currentTime.value;
-    }
-
     public utilization(): number {
         const total = sum(this.props.workingOn.inProgress.map(x => x.utilization)) + this.props.done.utilization()
         
         return total/this.props.currentTime.value;
     }
-
 
     public tick(): Team {
         const time = this.props.currentTime;

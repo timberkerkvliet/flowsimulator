@@ -103,21 +103,7 @@ class Strategy {
 
         backlog = backlog.ensureSize(this.props.batchSize.multiply(space.next()));
 
-        let tempBacklog = backlog;
-        let tempAssignments = current.unassignAll();
-
-        for (let k = 0; k < space.value; k++) {
-            const units = tempBacklog.topOfBacklog(this.props.batchSize);
-            tempBacklog = tempBacklog.remove(units);
-            tempAssignments = tempAssignments.addBatch(new BatchOfWork(units));
-        }
-
-        let candidates = tempAssignments.assignments
-            .filter(assignment => assignment.assignees.length === 0)
-            .map(assignment => assignment.batch)
-        
-        const matrix = new ChoiceMatrix(candidates, tempAssignments.unassigned(teamSize));
-        let path = matrix.resolve(teamSize);
+        let path = this.findPath(backlog, current, space, teamSize);
 
         let result = current;
         for (const option of path) {
@@ -130,6 +116,25 @@ class Strategy {
             assignments: result,
             backlog: backlog.remove(result.unitsOfWork)
         };
+    }
+
+    private findPath(backlog: Backlog, current: WorkAssignments, space: PositiveInteger, teamSize: PositiveInteger) {
+        let tempBacklog = backlog;
+        let tempAssignments = current.unassignAll();
+
+        for (let k = 0; k < space.value; k++) {
+            const units = tempBacklog.topOfBacklog(this.props.batchSize);
+            tempBacklog = tempBacklog.remove(units);
+            tempAssignments = tempAssignments.addBatch(new BatchOfWork(units));
+        }
+
+        let candidates = tempAssignments.assignments
+            .filter(assignment => assignment.assignees.length === 0)
+            .map(assignment => assignment.batch);
+
+        const matrix = new ChoiceMatrix(candidates, tempAssignments.unassigned(teamSize));
+        let path = matrix.resolve(teamSize);
+        return path;
     }
 }
 

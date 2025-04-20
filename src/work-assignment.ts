@@ -1,6 +1,5 @@
 import { BatchOfWork } from "./batch-of-work";
 import { PositiveInteger } from "./positive-integer";
-import { Task } from "./task";
 import { UnitOfWork } from "./unit-of-work";
 
 
@@ -78,19 +77,8 @@ class WorkAssignments {
             .reduce((acc, val) => acc.concat(val), []);
     }
 
-    public get batchesOfWork(): BatchOfWork[] {
-        return this.assignments
-            .map(assignment => assignment.batch)
-    }
-
     public isAssigned(teamMember: PositiveInteger): boolean {
         return this.assignments.filter(assignment => assignment.isAssigned(teamMember)).length > 0;
-    }
-
-    public get assignees(): PositiveInteger[] {
-        return this.assignments
-            .map(assignment => assignment.assignees)
-            .reduce((acc, val) => acc.concat(val), []);
     }
 
     public unassigned(teamSize: PositiveInteger): PositiveInteger[] {
@@ -119,16 +107,6 @@ class WorkAssignments {
         return new WorkAssignments({assignments});
     }
 
-    cleanUp(): WorkAssignments {
-        return new WorkAssignments(
-            {
-                assignments: this.assignments.filter(
-                    assignment => assignment.batch.hasStarted || assignment.assignees.length > 0
-                )
-            }
-        );
-    }
-
     assign(member: PositiveInteger, batch: BatchOfWork): WorkAssignments {
         const batchIndex = this.assignments.findIndex(assignment => assignment.batch.equals(batch));
         let assignments = this.assignments;
@@ -147,12 +125,6 @@ class WorkAssignments {
     unassignAll(): WorkAssignments {
         return new WorkAssignments(
             {assignments: this.assignments.map(assignment => assignment.unassignAll())});
-    }
-
-    public get batchesDone(): BatchOfWork[] {
-        return this.assignments
-            .map(assignment => assignment.batch)
-            .filter(batch => batch.isDone);
     }
 
     public get unitsDone(): UnitOfWork[] {

@@ -1,4 +1,3 @@
-import { WorkDone } from "./work-done";
 import { Team } from "./team";
 import { Backlog } from "./backlog";
 
@@ -71,7 +70,7 @@ class Renderer {
                 <tbody>
         `;
     
-        team.workInProgress().assignments.forEach(assignment => {
+        team.assignments().assignments.forEach(assignment => {
             html += "<tr><td style='padding: 6px;'>";
     
             assignment.batch.unitsOfWork.forEach(
