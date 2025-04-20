@@ -99,32 +99,31 @@ class Strategy {
         backlog: Backlog,
         teamSize: PositiveInteger
     ): StrategyExecutionResult {
-        let result = current.unassignAll();
+        const space = this.props.wipLimit.minus(current.numberInProgress);
 
-        backlog = backlog.ensureSize(this.props.batchSize.multiply(this.props.wipLimit));
+        backlog = backlog.ensureSize(this.props.batchSize.multiply(space.next()));
 
         let tempBacklog = backlog;
-
-        const space = this.props.wipLimit.minus(result.numberInProgress);
+        let tempAssignments = current.unassignAll();
 
         for (let k = 0; k < space.value; k++) {
             const units = tempBacklog.topOfBacklog(this.props.batchSize);
             tempBacklog = tempBacklog.remove(units);
-            result = result.addBatch(new BatchOfWork(units));
+            tempAssignments = tempAssignments.addBatch(new BatchOfWork(units));
         }
 
-        let candidates = result.assignments
+        let candidates = tempAssignments.assignments
             .filter(assignment => assignment.assignees.length === 0)
             .map(assignment => assignment.batch)
         
-        const matrix = new ChoiceMatrix(candidates, result.unassigned(teamSize));
+        const matrix = new ChoiceMatrix(candidates, tempAssignments.unassigned(teamSize));
         let path = matrix.resolve(teamSize);
 
+        let result = current;
         for (const option of path) {
             result = result.assign(option.member, option.batch);
         }
         
-        result = result.cleanUp();
         result = this.addCollaboration(result, teamSize);
 
         return {

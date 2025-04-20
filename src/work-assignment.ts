@@ -136,7 +136,7 @@ class WorkAssignments {
         assignments = assignments.map(assignment => assignment.unassign(member));
 
         if (batchIndex === -1) {
-            assignments = [new WorkAssignment({batch, assignees: [member]}), ...assignments];
+            return this.addBatch(batch).assign(member, batch)
         } else {
             assignments[batchIndex] = assignments[batchIndex].assign(member)
         }
