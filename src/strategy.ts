@@ -103,7 +103,7 @@ class Strategy {
 
         backlog = backlog.ensureSize(this.props.batchSize.multiply(space.next()));
 
-        let path = this.findPath(backlog, current, space, teamSize);
+        let path = this.findPath(backlog, current, teamSize);
 
         let result = current;
         for (const option of path) {
@@ -118,7 +118,13 @@ class Strategy {
         };
     }
 
-    private findPath(backlog: Backlog, current: WorkAssignments, space: PositiveInteger, teamSize: PositiveInteger) {
+    private findPath(
+        backlog: Backlog,
+        current: WorkAssignments,
+        teamSize: PositiveInteger
+    ): AssignOption[] {
+        const space = this.props.wipLimit.minus(current.numberInProgress);
+
         let tempBacklog = backlog;
         let tempAssignments = current.unassignAll();
 
@@ -133,8 +139,7 @@ class Strategy {
             .map(assignment => assignment.batch);
 
         const matrix = new ChoiceMatrix(candidates, tempAssignments.unassigned(teamSize));
-        let path = matrix.resolve(teamSize);
-        return path;
+        return matrix.resolve(teamSize);
     }
 }
 

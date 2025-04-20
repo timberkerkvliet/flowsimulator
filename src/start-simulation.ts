@@ -1,8 +1,9 @@
 
 import { PositiveInteger } from "./positive-integer";
 import { Renderer } from "./renderer";
-import { getTeamFromSettings, SimulationRunner } from "./simulation-runner"
+import { SimulationRunner, TeamSimulation } from "./simulation-runner"
 import { SimulationSettings, theMechanism, wipLimitsWillHit, wipLimitTradeOff, collaboration } from "./simulation-settings";
+import { createTeamFromSettings } from "./team-factory";
 
 const button = document.getElementById('startButton');
 
@@ -104,31 +105,31 @@ async function runSimulation(settings: SimulationSettings) {
     formatSettings(settings);
     disableInputs();
 
-    const team = getTeamFromSettings(settings.teamSimulationsSettings[0]);
-    const team2 = getTeamFromSettings(settings.teamSimulationsSettings[1]);
+    const team = createTeamFromSettings(settings.teamSimulationsSettings[0]);
+    const team2 = createTeamFromSettings(settings.teamSimulationsSettings[1]);
 
     const runner = new SimulationRunner(
         [
-            {
-                team: team,
-                renderer: new Renderer(
+            new TeamSimulation(
+                team,
+                new Renderer(
                     document.getElementById('backlog'),
                     document.getElementById('inprogress'),
                     document.getElementById('cycletime'),
                     document.getElementById('throughput'),
                     document.getElementById('utilization')
                 )
-            },
-            {
-                team: team2,
-                renderer: new Renderer(
+            ),
+            new TeamSimulation(
+                team2,
+                new Renderer(
                     document.getElementById('backlog-2'),
                     document.getElementById('inprogress-2'),
                     document.getElementById('cycletime-2'),
                     document.getElementById('throughput-2'),
                     document.getElementById('utilization-2')
                 )
-            }
+            )
         ],
         settings.sleepTime,
         false
