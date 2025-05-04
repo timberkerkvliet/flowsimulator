@@ -58,10 +58,6 @@ class Task {
         return assignees.filter(assignee => assignee.equals(this.needsMember)).length > 0;
     }
 
-    public get canCollaborate() : boolean {
-        return this.props.togetherFactor > 0;
-    }
-
     public progress(
         time: PositiveInteger,
         assignees: PositiveInteger[]

@@ -12,16 +12,17 @@ class CollaborationStrategy {
         teamSize: PositiveInteger
     ): StrategyExecutionResult {
         let member = PositiveInteger.fromNumber(1);
-        let result = this.strategy.execute(current, backlog, teamSize).assignments;
+        const result = this.strategy.execute(current, backlog, teamSize);
+        let assignments = result.assignments;
 
         while (member.leq(teamSize)) {
-            if (!result.isAssigned(member)) {
-                let candidates = result.assignments
+            if (!assignments.isAssigned(member)) {
+                let candidates = assignments.assignments
                     .filter(assignment => assignment.assignees.length > 0)
                     .sort((x, y) => x.assignees.length - y.assignees.length);
                 
                 if (candidates.length > 0) {
-                    result = result.assign(member, candidates[0].batch);
+                    assignments = assignments.assign(member, candidates[0].batch);
                 }
             }
 
@@ -29,8 +30,8 @@ class CollaborationStrategy {
         }
 
         return {
-            assignments: result,
-            backlog: backlog
+            assignments,
+            backlog: result.backlog
         };
     }
 
