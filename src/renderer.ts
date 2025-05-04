@@ -24,6 +24,7 @@ class Renderer {
         private inProgress: HTMLElement,
         private cycleTime: HTMLElement,
         private throughput: HTMLElement,
+        private relativeThroughput: HTMLElement,
         private utilization: HTMLElement
     ) {
         
@@ -125,8 +126,10 @@ class Renderer {
     private renderStats(team: Team, teamSize: number) {
         const workDone = team.workDone();
         const throughPut = workDone.throughPut();
-        this.cycleTime.innerHTML = workDone.averageCycleTime().toFixed(3);
+        const cycleTime = workDone.averageCycleTime();
+        this.cycleTime.innerHTML = cycleTime.toFixed(3);
         this.throughput.innerHTML = throughPut.toFixed(3);
+        this.relativeThroughput.innerHTML = (throughPut/cycleTime).toFixed(3);
         this.utilization.innerHTML = (team.utilization()*100/teamSize).toFixed(1) + "%"
         
     }

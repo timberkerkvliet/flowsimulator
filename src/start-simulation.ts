@@ -117,6 +117,7 @@ async function runSimulation(settings: SimulationSettings) {
                     document.getElementById('inprogress'),
                     document.getElementById('cycletime'),
                     document.getElementById('throughput'),
+                    document.getElementById('throughput-relative'),
                     document.getElementById('utilization')
                 )
             ),
@@ -127,6 +128,7 @@ async function runSimulation(settings: SimulationSettings) {
                     document.getElementById('inprogress-2'),
                     document.getElementById('cycletime-2'),
                     document.getElementById('throughput-2'),
+                    document.getElementById('throughput-relative-2'),
                     document.getElementById('utilization-2')
                 )
             )
