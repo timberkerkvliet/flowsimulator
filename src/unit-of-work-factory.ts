@@ -12,12 +12,14 @@ function randomLetters(randomSeed: () => number): string {
     return result;
 }
 
-
-function randomTeamMember(teamSize: PositiveInteger, randomSeed: () => number): PositiveInteger {
-    return PositiveInteger.fromNumber(Math.floor(randomSeed() * teamSize.value) + 1);
+function shuffle<T>(array: T[], randomSeed: () => number): T[] {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(randomSeed() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
 }
-
-
 
 class UnitOfWorkFactory {
     constructor(
@@ -27,7 +29,11 @@ class UnitOfWorkFactory {
             unitSize: PositiveInteger,
             teamSize: PositiveInteger
         }
-    ) {}
+    ) {
+        if (props.unitSize.value > props.teamSize.value) {
+            throw new Error("Unit size cannot be greater than team size when each task must have a different team member.");
+        }
+    }
 
     private createTask(member: PositiveInteger): Task {
         return new Task({
@@ -41,16 +47,18 @@ class UnitOfWorkFactory {
             utilization: 0
         });
     }
-    
+
     public create(): UnitOfWork {
-        let tasks: Task[] = [];
-        for (let k = 0; k < this.props.unitSize.value; k++) {
-            tasks = [...tasks, this.createTask(randomTeamMember(this.props.teamSize, this.props.randomSeed))]
-        }
+        const teamMemberIds = Array.from({ length: this.props.teamSize.value }, (_, i) =>
+            PositiveInteger.fromNumber(i + 1)
+        );
+
+        const shuffledMembers = shuffle(teamMemberIds, this.props.randomSeed).slice(0, this.props.unitSize.value);
+
+        const tasks = shuffledMembers.map(member => this.createTask(member));
+
         return new UnitOfWork(tasks);
     }
-    
-
 }
 
-export { UnitOfWorkFactory }
+export { UnitOfWorkFactory };
