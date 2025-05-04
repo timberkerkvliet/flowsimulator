@@ -37,7 +37,7 @@ class UnitOfWork {
 
 
     public get canCollaborate(): boolean {
-        return this.tasks.filter(unit => unit.canCollaborate).length > 0;
+        return this.tasks.filter(task => task.canCollaborate).length > 0;
     }
 
     public get membersNeeded(): PositiveInteger[] {

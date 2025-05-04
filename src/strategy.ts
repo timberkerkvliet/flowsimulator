@@ -105,7 +105,7 @@ class Strategy {
 
         let path = this.findPath(backlog, current, teamSize);
 
-        let result = current;
+        let result = current.unassignAll();
         for (const option of path) {
             result = result.assign(option.member, option.batch);
         }
