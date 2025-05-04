@@ -8,6 +8,15 @@ type StrategyExecutionResult = {
     backlog: Backlog
 }
 
+interface Strategy {
+    execute(
+        current: WorkAssignments,
+        backlog: Backlog,
+        teamSize: PositiveInteger
+    ): StrategyExecutionResult
+}
+
+
 type AssignOption = {
     batch: BatchOfWork,
     member: PositiveInteger
@@ -64,35 +73,13 @@ class ChoiceMatrix {
 
 }
 
-class Strategy {
+class BaseStrategy {
     constructor(
         private readonly props: {
             batchSize: PositiveInteger,
             wipLimit: PositiveInteger
         }
     ) {}
-
-    private addCollaboration(current: WorkAssignments, teamSize: PositiveInteger): WorkAssignments {
-        let member = PositiveInteger.fromNumber(1);
-        let result = current;
-
-        while (member.leq(teamSize)) {
-            if (!result.isAssigned(member)) {
-                let candidates = result.assignments
-                    .filter(assignment => assignment.assignees.length > 0)
-                    .filter(assignment => assignment.batch.canCollaborate)
-                    .sort((x, y) => x.assignees.length - y.assignees.length);
-                
-                if (candidates.length > 0) {
-                    result = result.assign(member, candidates[0].batch);
-                }
-            }
-
-            member = member.next();
-        }
-
-        return result;
-    }
 
     execute(
         current: WorkAssignments,
@@ -109,8 +96,6 @@ class Strategy {
         for (const option of path) {
             result = result.assign(option.member, option.batch);
         }
-        
-        result = this.addCollaboration(result, teamSize);
 
         return {
             assignments: result,
@@ -143,4 +128,4 @@ class Strategy {
     }
 }
 
-export { Strategy }
+export { BaseStrategy, Strategy, StrategyExecutionResult }

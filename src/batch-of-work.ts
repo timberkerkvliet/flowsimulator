@@ -30,10 +30,6 @@ class BatchOfWork {
         return [...s].map(x => PositiveInteger.fromNumber(x));
     }
 
-    public get canCollaborate(): boolean {
-        return this.unitsOfWork.filter(unit => unit.canCollaborate).length > 0;
-    }
-
     public get utilization(): number {
         return sum(this.unitsOfWork.map(unit => unit.utilization))
     }

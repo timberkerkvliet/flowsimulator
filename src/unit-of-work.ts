@@ -35,11 +35,6 @@ class UnitOfWork {
         return this.tasks.filter(task => task.canBeProgressedBy(assignees)).length > 0;
     }
 
-
-    public get canCollaborate(): boolean {
-        return this.tasks.filter(task => task.canCollaborate).length > 0;
-    }
-
     public get membersNeeded(): PositiveInteger[] {
         const values = this.tasks
             .filter(unit => !unit.isDone())
