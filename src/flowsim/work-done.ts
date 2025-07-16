@@ -1,4 +1,4 @@
-import { average, sum } from "../node_modules/simple-statistics/index";
+import { average, sum } from "simple-statistics";
 import { UnitOfWork } from "./unit-of-work"
 import { PositiveInteger } from "./positive-integer";
 import { Task } from "./task";
