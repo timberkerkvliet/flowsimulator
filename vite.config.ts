@@ -5,7 +5,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        flowsim: 'src/flowsim/flowsim.html'
+        teamsim: 'src/teamsim/index.html'
       },
     },
     assetsDir: 'assets',
